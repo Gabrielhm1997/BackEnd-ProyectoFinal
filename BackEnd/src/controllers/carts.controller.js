@@ -1,5 +1,7 @@
 import cartModel from "../models/cart.models.js"
 import productModel from "../models/products.models.js"
+import ticketModel from "../models/ticket.models.js"
+
 export class cartsController {
 
     postCart = async (req, res) => {// Crea un nuevo carrito Vacio
@@ -205,4 +207,78 @@ export class cartsController {
             res.status(400).send({ error: e })
         }
     }
+
+    postPurchase = async (req, res) => {// Finalizar compra
+        const { cid } = req.params
+        let i = 0
+
+        try {
+
+            const cart = await cartModel.findById(cid)
+
+            if (cart) {
+
+                if (cart.products.length > 0) {
+
+                    const validProducts = []
+
+                    const asyncFilter = async () => {
+
+                        if (i < cart.products.length) {
+
+                            if (cart.products[i].quantity <= ((await productModel.findById(cart.products[i].id_prod)).stock)) {
+                                validProducts.push(cart.products[i])
+                            }
+
+                            i += 1
+                            asyncFilter()
+                        } else {
+
+                            let total = 0
+
+                            validProducts.forEach(product => {
+                                total += (product.id_prod.price * product.quantity)
+                            })
+                            const ticket = await ticketModel.create({ purchaser: req.user.email, amount: total })
+
+                            cart.products = []
+                            await cart.save()
+
+                            res.status(200).send({ ticket: ticket /*validProducts: validProducts, total: total */ })
+                        }
+                    }
+                    asyncFilter()
+                } else {
+                    res.status(400).send({ error: "Empty Cart" })
+                }
+            } else {
+                res.status(404).send({ error: "Not found" })
+            }
+
+        } catch (error) {
+            res.status(400).send({ error: error })
+        }
+    }
 }
+
+
+// try {
+//     cart.products.map(async (product) => {
+
+//         if (product.quantity > ((await productModel.findById(product.id_prod)).stock)) {
+//             console.log("mayor")
+//         } else if (product.quantity <= ((await productModel.findById(product.id_prod)).stock)) {
+//             console.log("menor-igual")
+//             validProducts.push(product)
+//         } else {
+//             console.log(false)
+//         }
+
+//         //console.log((await productModel.findById(product.id_prod)).stock)
+//     })
+//     console.log(validProducts)
+//     res.status(200).send({ validProducts: validProducts })
+// } catch (error) {
+//     console.log(error)
+// }
+//const validProducts = cart.products.filter(async (product) => product.quantity <= ((await productModel.findById(product.id_prod)).stock))

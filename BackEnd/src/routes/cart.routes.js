@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { authorization, passportError } from "../utils/messageErrors.js"
 import { cartsController } from "../controllers/carts.controller.js"
 
 const routerCarts = Router()
@@ -17,5 +18,7 @@ routerCarts.put('/:cid/products/:pid', controller.putUpdateProductCuantity)// Ac
 routerCarts.delete('/:cid', controller.deleteEmptyCart)// Vaciar el carrito
 
 routerCarts.delete('/:cid/products/:pid', controller.deleteProductFromCart)// Elimina un producto especifico del carrito
+
+routerCarts.post('/:cid/purchase', passportError('jwt'), authorization('user'), controller.postPurchase)// Finalizar compra
 
 export default routerCarts
