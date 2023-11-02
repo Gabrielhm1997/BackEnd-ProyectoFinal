@@ -5,6 +5,8 @@ import { mockController } from "../controllers/mock.controller.js"
 const routerTest = Router()
 const controller = new mockController()
 
-routerTest.get('/mockingproducts', passportError('jwt'), authorization('admin'), controller.createRandomUser(100))
+routerTest.get('/mockingusers', passportError('jwt'), authorization('admin'), controller.createRandomUser(100))
+
+routerTest.get('/mockingproducts', passportError('jwt'), authorization('user'), controller.createRandomProduct(10))
 
 export default routerTest

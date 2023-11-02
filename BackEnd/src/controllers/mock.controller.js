@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-
+import { v4 as uuidv4 } from 'uuid'
 
 export class mockController {
     constructor() { }
@@ -17,6 +17,31 @@ export class mockController {
         }
     }
 
+    randomCategory = () => {
+
+        const i = faker.number.int({ min: 1, max: 3 })
+
+        switch (i) {
+            case 1: return "Computacion"
+            case 2: return "Alimentos"
+            case 3: return "Hogar"
+        }
+    }
+
+    modelProduct = () => {
+        return {
+            _id: faker.database.mongodbObjectId(),
+            title: faker.commerce.product(),
+            description: faker.commerce.productDescription(),
+            price: faker.commerce.price({ min: 1000, max: 5000 }),
+            stock: faker.number.int({ min: 10, max: 100 }),
+            category: this.randomCategory(),
+            status: true,
+            code: uuidv4(),
+            thumbnails: []
+        }
+    }
+
     createRandomUser = (quantity) => {
         return async (req, res) => {
             try {
@@ -27,6 +52,23 @@ export class mockController {
                 }
 
                 res.status(200).send({ status: true, testUsers: testUsers })
+            } catch (error) {
+                console.log(error)
+                res.status(400).send({ status: false, error: error })
+            }
+        }
+    }
+
+    createRandomProduct = (quantity) => {
+        return async (req, res) => {
+            try {
+                const testProducts = []
+
+                for (let i = 0; i < quantity; i++) {
+                    testProducts.push(this.modelProduct())
+                }
+
+                res.status(200).send({ status: true, testProducts: testProducts })
             } catch (error) {
                 console.log(error)
                 res.status(400).send({ status: false, error: error })
