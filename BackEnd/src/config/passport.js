@@ -20,7 +20,8 @@ const initializePassport = () => {
             last_name: user.last_name,
             age: user.age,
             email: user.email,
-            rol: user.rol
+            rol: user.rol,
+            cart: user.cart
         }
         return safeUser
     }

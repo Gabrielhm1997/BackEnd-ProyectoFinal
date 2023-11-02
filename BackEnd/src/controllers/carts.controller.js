@@ -212,51 +212,65 @@ export class cartsController {
         const { cid } = req.params
         let i = 0
 
-        try {
+        if (req.user.cart == cid) {
+            try {
 
-            const cart = await cartModel.findById(cid)
+                const cart = await cartModel.findById(cid)
 
-            if (cart) {
+                if (cart) {
 
-                if (cart.products.length > 0) {
+                    if (cart.products.length > 0) {
 
-                    const validProducts = []
+                        const validProducts = []
 
-                    const asyncFilter = async () => {
+                        const asyncFilter = async () => {
 
-                        if (i < cart.products.length) {
+                            if (i < cart.products.length) {
 
-                            if (cart.products[i].quantity <= ((await productModel.findById(cart.products[i].id_prod)).stock)) {
-                                validProducts.push(cart.products[i])
+                                const dbProduct = await productModel.findById(cart.products[i].id_prod)
+
+                                if (cart.products[i].quantity <= (dbProduct.stock)) {
+
+                                    dbProduct.stock = dbProduct.stock - cart.products[i].quantity
+                                    await dbProduct.save()
+
+                                    validProducts.push(cart.products[i])
+                                }
+
+                                i += 1
+                                asyncFilter()
+                            } else {
+
+                                if (validProducts.length > 0) {
+                                    let total = 0
+
+                                    validProducts.forEach(product => {
+                                        total += (product.id_prod.price * product.quantity)
+                                    })
+                                    const ticket = await ticketModel.create({ purchaser: req.user.email, amount: total, purchased_products: validProducts })
+
+                                    cart.products = []
+                                    await cart.save()
+
+                                    res.status(200).send({ ticket: ticket })//, validProducts: validProducts, total: total 
+                                } else {
+                                    res.status(400).send({ error: "Empty Cart" })
+                                }
                             }
-
-                            i += 1
-                            asyncFilter()
-                        } else {
-
-                            let total = 0
-
-                            validProducts.forEach(product => {
-                                total += (product.id_prod.price * product.quantity)
-                            })
-                            const ticket = await ticketModel.create({ purchaser: req.user.email, amount: total })
-
-                            cart.products = []
-                            await cart.save()
-
-                            res.status(200).send({ ticket: ticket /*validProducts: validProducts, total: total */ })
                         }
+                        asyncFilter()
+                    } else {
+                        res.status(400).send({ error: "Empty Cart" })
                     }
-                    asyncFilter()
                 } else {
-                    res.status(400).send({ error: "Empty Cart" })
+                    res.status(404).send({ error: "Not found" })
                 }
-            } else {
-                res.status(404).send({ error: "Not found" })
-            }
 
-        } catch (error) {
-            res.status(400).send({ error: error })
+            } catch (error) {
+                res.status(400).send({ error: error })
+            }
+        } else {
+            res.status(400).send({ error: "Invalid Cart" })
         }
     }
 }
