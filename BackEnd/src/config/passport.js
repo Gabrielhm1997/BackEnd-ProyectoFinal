@@ -6,6 +6,10 @@ import GithubStrategy from 'passport-github2'
 import userModel from '../models/users.models.js'
 import { createHash, validatePassword } from '../utils/bcrypt.js'
 
+import CustomError from '../services/errors/CustomError.js'
+import EErrors from '../services/errors/enums.js'
+import { generateProductErrorInfo } from '../services/errors/info.js'
+
 const LocalStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
@@ -44,14 +48,29 @@ const initializePassport = () => {
         }
     }))
 
-    passport.use('register', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
+    passport.use('register', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => { // -- HandlerError
 
         const { first_name, last_name, email, age } = req.body
         try {
+            if (!first_name || !last_name || !email || !age) {
+        
+                CustomError.createError({
+                    name: "User creation Error",
+                    cause: generateUserErrorInfo({first_name,last_name,email, age}),
+                    message: "Error Trying to create User",
+                    code: EErrors.INVALID_TYPE
+                })
+            }    
             const user = await userModel.findOne({ email: email })
 
             if (user) {
-                return done(null, false)
+                //return done(null, false)
+                CustomError.createError({
+                    name: "User creation Error",
+                    cause: "User Alredy Registered",
+                    message: "Error Trying to create User",
+                    code: EErrors.DATABASE
+                })
             } else {
                 const passwordHash = createHash(password)
                 const newUser = await userModel.create({

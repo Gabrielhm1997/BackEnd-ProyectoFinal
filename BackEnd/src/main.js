@@ -54,7 +54,7 @@ app.use(passport.session())
 app.use('/static', express.static('src/public')) // Rutas publicas
 app.use('/static', routerViews) // Ruta de vistas Handlebars
 app.use('/api', router) // Router de las rutas "API"
- 
+
 app.get('*', (req, res) => {
     res.status(404).send("Error 404")
 })

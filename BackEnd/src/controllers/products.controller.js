@@ -1,5 +1,9 @@
 import productModel from "../models/products.models.js"
 
+import CustomError from "../services/errors/CustomError.js"
+import EErrors from "../services/errors/enums.js"
+import { generateProductErrorInfo } from "../services/errors/info.js"
+
 export class productsController {
     constructor() { }
 
@@ -23,7 +27,7 @@ export class productsController {
     }
 
     getProductByID = async (req, res) => {
-        
+
         const { id } = req.params
 
         try {
@@ -38,14 +42,25 @@ export class productsController {
         }
     }
 
-    postProduct = async (req, res) => {
+    postProduct = async (req, res) => { // Crea un producto -- HandlerError
         const { title, description, stock, code, price, category } = req.body
 
         try {
-            const response = await productModel.create({ title, description, stock, code, price, category }) // Devuelve el objeto creado 
-            res.status(200).send(`Product created successfully`)
+
+            if (!title || !description || !stock || !code || !price || !category) {
+
+                CustomError.createError({
+                    name: "Product creation Error",
+                    cause: generateProductErrorInfo({ title, description, stock, code, price, category }),
+                    message: "Error Trying to create Product",
+                    code: EErrors.INVALID_TYPE
+                })
+            } else {
+                const response = await productModel.create({ title, description, stock, code, price, category }) // Devuelve el objeto creado 
+                res.status(200).send(`Product created successfully`)
+            }
         } catch (error) {                                                                                    // Cualquier tipo de error lo captura el Catch
-            res.status(400).send(`Error creating product: ${error}`)
+            res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 

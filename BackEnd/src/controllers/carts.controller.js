@@ -2,6 +2,10 @@ import cartModel from "../models/cart.models.js"
 import productModel from "../models/products.models.js"
 import ticketModel from "../models/ticket.models.js"
 
+import CustomError from "../services/errors/CustomError.js"
+import EErrors from "../services/errors/enums.js"
+import { generateProductIntoCartErrorInfo } from "../services/errors/info.js"
+
 export class cartsController {
 
     postCart = async (req, res) => {// Crea un nuevo carrito Vacio
@@ -14,11 +18,22 @@ export class cartsController {
         }
     }
 
-    postProductInCart = async (req, res) => {// Agrega un producto por su id al carrito
+    postProductInCart = async (req, res) => {// Agrega un producto por su id al carrito -- HandlerError
         const { cid, pid } = req.params
         const { quantity } = req.body
 
         try {
+
+            if (!cid || !pid || !quantity) {
+        
+                CustomError.createError({
+                    name: "Load Product Into Cart",
+                    cause: generateProductIntoCartErrorInfo(cid, pid, quantity),
+                    message: "Error Trying to Load Product Into Cart",
+                    code: EErrors.INVALID_TYPE
+                })
+            }
+
             const cartFound = await cartModel.findById(cid)
             if (cartFound) {
                 const productCollectionFound = await productModel.findById(pid)
@@ -32,35 +47,71 @@ export class cartsController {
                         res.status(200).send({ respuesta: 'OK', mensaje: cartFound.products })
                     }
                 } else {
-                    res.status(404).send(`Product Not Found`)
+                    //res.status(404).send(`Product Not Found`)
+                    CustomError.createError({
+                        name: "Load Product Into Cart",
+                        cause: "Product Not Found",
+                        message: "Error Trying to Load Product Into Cart",
+                        code: EErrors.DATABASE
+                    })
                 }
-
             } else {
-                res.status(404).send(`Cart Not Found`)
+                //res.status(404).send(`Cart Not Found`)
+                CustomError.createError({
+                    name: "Load Product Into Cart",
+                    cause: "Cart Not Found",
+                    message: "Error Trying to Load Product Into Cart",
+                    code: EErrors.DATABASE
+                })
             }
         } catch (error) {
-            res.status(400).send({ error: error })
+            console.log(error)
+            res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 
-    getProductsFromCart = async (req, res) => {// Lista los productos del carrito
+    getProductsFromCart = async (req, res) => {// Lista los productos del carrito -- HandlerError
 
         const { cid } = req.params
 
         try {
+
+            if(!cid){
+                CustomError.createError({
+                    name: "Get Cart From DataBase",
+                    cause: `One or more properties were incomplete or not valid.
+                    List of required properties:
+                    * title : need to be a String, recived ${cid}`,
+                    message: "Error Trying to Getting Cart From DataBase",
+                    code: EErrors.INVALID_TYPE
+                })
+            }
+
             const cart = await cartModel.findOne({ _id: cid })
             if (cart) {
                 const products = cart.products
                 if (products.length > 0) {
                     res.status(200).send(products)
                 } else {
-                    res.status(400).send("Cart empty")
+                    //res.status(400).send("Cart empty")
+                    CustomError.createError({
+                        name: "Get Products From Cart",
+                        cause: "Empty Cart",
+                        message: "Error Trying to Getting Products From Cart",
+                        code: EErrors.VOID_OBJECT
+                    })
                 }
             } else {
-                res.status(404).send(`Cart Not Found`)
+                //res.status(404).send(`Cart Not Found`)
+                CustomError.createError({
+                    name: "Get Cart From DataBase",
+                    cause: "Cart Not Found",
+                    message: "Error Trying to Getting Cart From DataBase",
+                    code: EErrors.DATABASE
+                })
             }
         } catch (error) {
-            res.status(400).send(`Error checking carts: ${error}`)
+            res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 
