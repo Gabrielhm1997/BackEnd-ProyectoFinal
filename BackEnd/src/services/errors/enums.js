@@ -4,5 +4,5 @@ const EErrors = {
     DATABASE: 3,
     VOID_OBJECT: 4
 }
-
+ 
 export default EErrors

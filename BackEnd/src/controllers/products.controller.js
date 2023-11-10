@@ -42,7 +42,7 @@ export class productsController {
         }
     }
 
-    postProduct = async (req, res) => { // Crea un producto -- HandlerError
+    postProduct = async (req, res, next) => { // Crea un producto -- HandlerError
         const { title, description, stock, code, price, category } = req.body
 
         try {
@@ -59,8 +59,9 @@ export class productsController {
                 const response = await productModel.create({ title, description, stock, code, price, category }) // Devuelve el objeto creado 
                 res.status(200).send(`Product created successfully`)
             }
-        } catch (error) {                                                                                    // Cualquier tipo de error lo captura el Catch
-            res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
+        } catch (error) {             
+            next(error)                                                                       // Cualquier tipo de error lo captura el Catch
+            //res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 

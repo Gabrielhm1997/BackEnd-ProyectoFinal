@@ -8,7 +8,7 @@ import { createHash, validatePassword } from '../utils/bcrypt.js'
 
 import CustomError from '../services/errors/CustomError.js'
 import EErrors from '../services/errors/enums.js'
-import { generateProductErrorInfo } from '../services/errors/info.js'
+import { generateUserErrorInfo } from '../services/errors/info.js'
 
 const LocalStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy

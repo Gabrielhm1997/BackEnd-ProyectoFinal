@@ -18,14 +18,14 @@ export class cartsController {
         }
     }
 
-    postProductInCart = async (req, res) => {// Agrega un producto por su id al carrito -- HandlerError
+    postProductInCart = async (req, res, next) => {// Agrega un producto por su id al carrito -- HandlerError
         const { cid, pid } = req.params
         const { quantity } = req.body
 
         try {
 
             if (!cid || !pid || !quantity) {
-        
+
                 CustomError.createError({
                     name: "Load Product Into Cart",
                     cause: generateProductIntoCartErrorInfo(cid, pid, quantity),
@@ -40,7 +40,13 @@ export class cartsController {
                 if (productCollectionFound) {
                     const productCartFound = cartFound.products.find(product => product.id_prod._id.toString() === pid)
                     if (productCartFound) {
-                        res.status(400).send({ respuesta: 'OK', mensaje: 'The product already exists in the cart, please use the corresponding PUT method' })
+                        CustomError.createError({
+                            name: "Load Product Into Cart",
+                            cause: "The product already exists in the cart",
+                            message: "Error Trying to Load Product Into Cart",
+                            code: EErrors.INVALID_TYPE
+                        })
+                        //res.status(400).send({ respuesta: 'OK', mensaje: 'The product already exists in the cart, please use the corresponding PUT method' })
                     } else {
                         cartFound.products.push({ id_prod: pid, quantity: quantity })
                         await cartFound.save()
@@ -65,23 +71,24 @@ export class cartsController {
                 })
             }
         } catch (error) {
-            console.log(error)
-            res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
+            next(error)
+            // console.log(error)
+            // res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 
-    getProductsFromCart = async (req, res) => {// Lista los productos del carrito -- HandlerError
+    getProductsFromCart = async (req, res, next) => {// Lista los productos del carrito -- HandlerError
 
         const { cid } = req.params
 
         try {
 
-            if(!cid){
+            if (!cid) {
                 CustomError.createError({
                     name: "Get Cart From DataBase",
                     cause: `One or more properties were incomplete or not valid.
                     List of required properties:
-                    * title : need to be a String, recived ${cid}`,
+                    * Cart ID : need to be a valid ID, recived ${cid}`,
                     message: "Error Trying to Getting Cart From DataBase",
                     code: EErrors.INVALID_TYPE
                 })
@@ -111,7 +118,8 @@ export class cartsController {
                 })
             }
         } catch (error) {
-            res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
+            next(error)
+            //res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 

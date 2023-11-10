@@ -1,0 +1,14 @@
+img{
+    width: 15%;
+    height: auto;
+}
+
+button{
+    color: aliceblue;
+
+    padding: 2px;
+    width: 25%;
+    height: auto;
+
+    margin: 5px;
+}

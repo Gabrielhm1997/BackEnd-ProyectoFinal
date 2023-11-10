@@ -12,5 +12,4 @@ router.use('/users', routerUsers)
 router.use('/products', routerProducts)
 router.use('/carts', routerCarts)
 router.use('/test', routerTest)
-
 export default router

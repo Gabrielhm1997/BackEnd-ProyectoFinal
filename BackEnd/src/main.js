@@ -1,6 +1,7 @@
 // import { config } from "dotenv"
 // config({ path: process.ENV })
 import 'dotenv/config'
+import cors from 'cors'
 import express from 'express'
 import session from "express-session"
 import { engine } from 'express-handlebars'
@@ -12,10 +13,25 @@ import { Server } from 'socket.io'
 import router from './routes/index.routes.js'
 import routerViews from './routes/views.routes.js'
 import initializePassport from "./config/passport.js"
+import { errorHandler } from './middlewares/errors/errorHandler.js'
+
+const whiteList = ['http://localhost:5173']
+
+const corsOption = {
+    origin: function (origin, callback){
+        if(whiteList.indexOf(origin) != -1 || !origin){
+            callback(null, true)
+        } else {
+            callback (new Error("Acceso denegado"))
+        }
+    }
+}
 
 const PORT = 8080
-export default PORT
+//export default PORT
 const app = express()
+
+//app.use(cors(corsOption))
 
 // Conexion a Mongodb Atlas
 mongoose.connect(process.env.MONGODB_ATLAS_API_KEY)
@@ -54,6 +70,7 @@ app.use(passport.session())
 app.use('/static', express.static('src/public')) // Rutas publicas
 app.use('/static', routerViews) // Ruta de vistas Handlebars
 app.use('/api', router) // Router de las rutas "API"
+app.use(errorHandler)
 
 app.get('*', (req, res) => {
     res.status(404).send("Error 404")
