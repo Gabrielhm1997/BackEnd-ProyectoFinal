@@ -6,3 +6,6 @@ node_modules/
 
 # Archivos viejos
 views.obsoletas.js
+
+#Logs
+logs

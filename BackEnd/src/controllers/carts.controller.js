@@ -30,7 +30,8 @@ export class cartsController {
                     name: "Load Product Into Cart",
                     cause: generateProductIntoCartErrorInfo(cid, pid, quantity),
                     message: "Error Trying to Load Product Into Cart",
-                    code: EErrors.INVALID_TYPE
+                    code: EErrors.INVALID_TYPE,
+                    level: 3
                 })
             }
 
@@ -44,7 +45,8 @@ export class cartsController {
                             name: "Load Product Into Cart",
                             cause: "The product already exists in the cart",
                             message: "Error Trying to Load Product Into Cart",
-                            code: EErrors.INVALID_TYPE
+                            code: EErrors.INVALID_TYPE,
+                            level: 3
                         })
                         //res.status(400).send({ respuesta: 'OK', mensaje: 'The product already exists in the cart, please use the corresponding PUT method' })
                     } else {
@@ -58,7 +60,8 @@ export class cartsController {
                         name: "Load Product Into Cart",
                         cause: "Product Not Found",
                         message: "Error Trying to Load Product Into Cart",
-                        code: EErrors.DATABASE
+                        code: EErrors.DATABASE,
+                        level: 3
                     })
                 }
             } else {
@@ -67,12 +70,12 @@ export class cartsController {
                     name: "Load Product Into Cart",
                     cause: "Cart Not Found",
                     message: "Error Trying to Load Product Into Cart",
-                    code: EErrors.DATABASE
+                    code: EErrors.DATABASE,
+                    level: 3
                 })
             }
         } catch (error) {
             next(error)
-            // console.log(error)
             // res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
@@ -90,7 +93,8 @@ export class cartsController {
                     List of required properties:
                     * Cart ID : need to be a valid ID, recived ${cid}`,
                     message: "Error Trying to Getting Cart From DataBase",
-                    code: EErrors.INVALID_TYPE
+                    code: EErrors.INVALID_TYPE,
+                    level: 3
                 })
             }
 
@@ -105,7 +109,8 @@ export class cartsController {
                         name: "Get Products From Cart",
                         cause: "Empty Cart",
                         message: "Error Trying to Getting Products From Cart",
-                        code: EErrors.VOID_OBJECT
+                        code: EErrors.VOID_OBJECT,
+                        level: 3
                     })
                 }
             } else {
@@ -114,7 +119,8 @@ export class cartsController {
                     name: "Get Cart From DataBase",
                     cause: "Cart Not Found",
                     message: "Error Trying to Getting Cart From DataBase",
-                    code: EErrors.DATABASE
+                    code: EErrors.DATABASE,
+                    level: 3
                 })
             }
         } catch (error) {

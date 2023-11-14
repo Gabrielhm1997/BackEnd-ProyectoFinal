@@ -1,6 +1,7 @@
 // import { config } from "dotenv"
 // config({ path: process.ENV })
-import 'dotenv/config'
+//import 'dotenv/config'
+import enviroment from './config/enviroment.js'
 import cors from 'cors'
 import express from 'express'
 import session from "express-session"
@@ -26,7 +27,6 @@ const corsOption = {
         }
     }
 }
-
 const PORT = 8080
 //export default PORT
 const app = express()
@@ -34,7 +34,7 @@ const app = express()
 //app.use(cors(corsOption))
 
 // Conexion a Mongodb Atlas
-mongoose.connect(process.env.MONGODB_ATLAS_API_KEY)
+mongoose.connect(enviroment.MONGODB_ATLAS_API_KEY)
     .then(() => console.log("DB connected"))
     .catch(error => console.log(error))
 
@@ -48,14 +48,14 @@ const io = new Server(server)
 //Middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser(process.env.JWT_SECRET))
+app.use(cookieParser(enviroment.JWT_SECRET))
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_ATLAS_API_KEY,
+        mongoUrl: enviroment.MONGODB_ATLAS_API_KEY,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
         ttl: 90
     }),
-    secret: process.env.SESSION_SECRET,
+    secret: enviroment.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
 }))

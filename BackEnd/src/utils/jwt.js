@@ -1,9 +1,10 @@
-import 'dotenv/config'
+//import 'dotenv/config'
+import enviroment from '../config/enviroment.js'
 import jwt from 'jsonwebtoken'
 
 export const generateToken = (user) => {
     
-    const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: '12h' })
+    const token = jwt.sign({ user }, enviroment.JWT_SECRET, { expiresIn: '12h' })
     return token
 }
 
@@ -16,7 +17,7 @@ export const authToken = (req, res, next) => {
 
     const token = authHeader.split(' ')[1] //Separa en dos mi token y me quedo con la parte valida
 
-    jwt.sign(token, process.env.JWT_SECRET, (error, credentials) => {
+    jwt.sign(token, enviroment.JWT_SECRET, (error, credentials) => {
         if (error) {
             return res.status(403).send({ status: false,  error: "Usuario no autorizado" })
         }

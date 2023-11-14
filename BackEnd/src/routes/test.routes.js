@@ -1,3 +1,4 @@
+import enviroment from "../config/enviroment.js"
 import { Router } from "express"
 import { authorization, passportError } from "../utils/messageErrors.js"
 import { mockController } from "../controllers/mock.controller.js"
@@ -15,82 +16,86 @@ routerTest.get('/mockingusers', passportError('jwt'), authorization('admin'), co
 
 routerTest.get('/mockingproducts', passportError('jwt'), authorization('user'), controller.createRandomProduct(100))
 
-routerTest.post('/errorUser', async (req, res) => {
+routerTest.get('/loggerTest', async (req, res, next) => {
+
+    const { level } = req.body
 
     try {
-        const { first_name, last_name, email, age } = req.body
-
-        if (!first_name || !last_name || !email || !age) {
-
-            CustomError.createError({
-                name: "User creation Error",
-                cause: generateUserErrorInfo({ first_name, last_name, email, age }),
-                message: "Error Trying to create User",
-                code: EErrors.INVALID_TYPE
-            })
-        } else {
-            res.send("Succes")
+        switch (enviroment.MODE) {
+            case "PRODUCTION":
+                CustomError.createError({
+                    name: "Production Error",
+                    cause: "Testeo de Logger de produccion",
+                    message: "Production Error Testing",
+                    code: EErrors.INVALID_TYPE,
+                    level: level ?? 1,
+                    status: 400
+                })
+                break;
+        
+            default:
+                CustomError.createError({
+                    name: "Development Error",
+                    cause: "Testeo de Logger de desarrollo",
+                    message: "Development Error Testing",
+                    code: EErrors.INVALID_TYPE,
+                    level: level ?? 1,
+                    status: 400
+                })
+                break;
         }
-    } catch (error) {
-        console.log(error)
-        res.send({ error: error, cause: error.cause })
-    }
-})
-
-// routerTest.use((req, res, next) => {
-//     console.log("Middleware 1")
-//     next()
-// })
-
-routerTest.get('/error', (req, res, next) => {
-
-    const { error } = req.body
-
-    try {
-
-        if (error) {
-            //throw new Error(error)
-            CustomError.createError({
-                name: "Test Error",
-                cause: "Error: true",
-                message: "Error in testing Area",
-                code: EErrors.ROUTING
-            })
-        } else {
-            res.send({ status: "Succes" })
-        }
-
+        res.send('Por favor envie el nivel del error [1-5] por el body, bajo el nombre de "level"')
     } catch (error) {
         next(error)
     }
 })
 
-// routerTest.use((error, req, res, next) => {
-//     console.log("Middleware 2")
-//     console.log(error) // -> Reemplazar por Looger
-//     res.send({ error: error })
-// })
-
-// routerTest.post('/errorProduct', async (req, res) => {
+// routerTest.post('/errorUser', async (req, res, next) => {
 
 //     try {
-//         const { title, description, stock, code, price, category } = req.body
+//         const { first_name, last_name, email, age } = req.body
 
-//      if (!title || !description || !stock || !code || !price || !category) {
+//         if (!first_name || !last_name || !email || !age) {
 
-//          CustomError.createError({
-//              name: "Product creation Error",
-//              cause: generateProductErrorInfo({title, description, stock , code, price, category}),
-//              message: "Error Trying to create Product",
-//              code: EErrors.INVALID_TYPE
-//          })
-//      } else {
-//          res.send("Succes")
-//      }
-//      } catch (error) {
-//          console.log(error)
-//          res.send({error: error, cause: error.cause})
-//      }
-//  })
+//             CustomError.createError({
+//                 name: "User creation Error",
+//                 cause: generateUserErrorInfo({ first_name, last_name, email, age }),
+//                 message: "Error Trying to create User",
+//                 code: EErrors.INVALID_TYPE,
+//                 level: 2,
+//                 status: 400
+//             })
+//         } else {
+//             res.send("Succes")
+//         }
+//     } catch (error) {
+//         next(error)
+//     }
+// })
+
+// routerTest.get('/error', (req, res, next) => {
+
+//     const { error } = req.body
+
+//     try {
+
+//         if (error) {
+//             //throw new Error("Error salvaje aparece!")
+//             CustomError.createError({
+//                 name: "Test Error",
+//                 cause: "True Error",
+//                 message: "Error in testing Area",
+//                 code: EErrors.ROUTING,
+//                 level: 2,
+//                 status: 401
+//             })
+//         } else {
+//             res.send({ status: "Succes" })
+//         }
+
+//     } catch (error) {
+//         next(error)
+//     }
+// })
 
 export default routerTest

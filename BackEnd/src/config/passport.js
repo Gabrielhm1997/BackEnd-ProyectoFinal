@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import enviroment from './enviroment.js'
 import passport from 'passport'
 import jwt from 'passport-jwt'
 import local from 'passport-local'
@@ -37,9 +38,8 @@ const initializePassport = () => {
 
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: process.env.JWT_SECRET
+        secretOrKey: enviroment.JWT_SECRET
     }, async (jwt_payload, done) => {
-        //console.log(jwt_payload)
 
         try {
             return done(null, jwt_payload.user)
@@ -58,7 +58,8 @@ const initializePassport = () => {
                     name: "User creation Error",
                     cause: generateUserErrorInfo({first_name,last_name,email, age}),
                     message: "Error Trying to create User",
-                    code: EErrors.INVALID_TYPE
+                    code: EErrors.INVALID_TYPE,
+                    level: 3
                 })
             }    
             const user = await userModel.findOne({ email: email })
@@ -69,7 +70,8 @@ const initializePassport = () => {
                     name: "User creation Error",
                     cause: "User Alredy Registered",
                     message: "Error Trying to create User",
-                    code: EErrors.DATABASE
+                    code: EErrors.DATABASE,
+                    level: 3
                 })
             } else {
                 const passwordHash = createHash(password)
@@ -106,16 +108,16 @@ const initializePassport = () => {
     }))
 
     passport.use('github', new GithubStrategy({
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: process.env.CALLBACK_URL
+        clientID: enviroment.CLIENT_ID,
+        clientSecret: enviroment.CLIENT_SECRET,
+        callbackURL: enviroment.CALLBACK_URL
 
     }, async (accessToken, refreshToken, profile, done) => {
 
         try {
             // console.log(accessToken)
             // console.log(refreshToken)
-            // console.log(process.env.CALLBACK_URL)
+            // console.log(enviroment.CALLBACK_URL)
             const user = await userModel.findOne({ email: profile._json.email })
 
             if (user) {

@@ -53,7 +53,8 @@ export class productsController {
                     name: "Product creation Error",
                     cause: generateProductErrorInfo({ title, description, stock, code, price, category }),
                     message: "Error Trying to create Product",
-                    code: EErrors.INVALID_TYPE
+                    code: EErrors.INVALID_TYPE,
+                    level: 3
                 })
             } else {
                 const response = await productModel.create({ title, description, stock, code, price, category }) // Devuelve el objeto creado 
