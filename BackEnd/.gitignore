@@ -2,7 +2,8 @@
 node_modules/
 
 # Variables de entorno
-.env
+.env.development
+.env.production
 
 # Archivos viejos
 views.obsoletas.js
