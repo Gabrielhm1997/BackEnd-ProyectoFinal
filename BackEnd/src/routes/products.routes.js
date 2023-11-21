@@ -10,10 +10,10 @@ routerProducts.get('/', controller.getProducts)
 
 routerProducts.get('/:id', controller.getProductByID)
 
-routerProducts.post('/', passportError('jwt'), authorization('admin'), controller.postProduct)
+routerProducts.post('/', passportError('jwt'), authorization(['admin']), controller.postProduct)
 
-routerProducts.put('/:id', passportError('jwt'), authorization('admin'), controller.putProduct)
+routerProducts.put('/:id', passportError('jwt'), authorization(['admin']), controller.putProduct)
 
-routerProducts.delete('/:id', passportError('jwt'), authorization('admin'), controller.deleteProduct)
+routerProducts.delete('/:id', passportError('jwt'), authorization(['admin']), controller.deleteProduct)
 
 export default routerProducts

@@ -312,6 +312,11 @@ export class cartsController {
                                     validProducts.forEach(product => {
                                         total += (product.id_prod.price * product.quantity)
                                     })
+                                    
+                                    if(req.user.rol == "premium"){
+                                        total = (total - (total * 0.1))
+                                    }
+                                    
                                     const ticket = await ticketModel.create({ purchaser: req.user.email, amount: total, purchased_products: validProducts })
 
                                     cart.products = []
@@ -339,8 +344,6 @@ export class cartsController {
         }
     }
 }
-
-
 // try {
 //     cart.products.map(async (product) => {
 

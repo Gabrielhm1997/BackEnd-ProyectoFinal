@@ -13,7 +13,7 @@ export const passportError = (strategy) => {
 
                 if (!user) {
                     const infoD = info.toString().split(':')
-                    
+
                     CustomError.createError({
                         name: "Token Error",
                         cause: info.messages ? info.messages : `${infoD[1]}`,
@@ -34,9 +34,11 @@ export const passportError = (strategy) => {
     }
 }
 
-export const authorization = (rol) => {
+export const authorization = (roles) => {
 
     return async (req, res, next) => {
+
+        let rolCheck = false
 
         try {
             if (!req.user) {
@@ -50,7 +52,16 @@ export const authorization = (rol) => {
                 })
                 //return res.status(401).send({ status: false, error: 'Usuario no autenticado' })
             }
-            if (req.user.rol != rol) {
+
+            roles.forEach(rol => {
+                if (req.user.rol == rol) {
+                    rolCheck = true
+                }
+            })
+
+            if (rolCheck) {
+                next()
+            } else {
                 CustomError.createError({
                     name: "Authorization Error",
                     cause: 'Usuario no autorizado',
@@ -61,7 +72,6 @@ export const authorization = (rol) => {
                 })
                 //return res.status(403).send({ status: false, error: 'Usuario no autorizado' })
             }
-            next()
         } catch (error) {
             next(error)
         }

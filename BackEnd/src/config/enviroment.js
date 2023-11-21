@@ -15,6 +15,8 @@ export default {
     CLIENT_SECRET: process.env.CLIENT_SECRET,
     CALLBACK_URL: process.env.CALLBACK_URL,
     JWT_SECRET: process.env.JWT_SECRET,
-    LOGGS_PATH: process.env.LOGGS_PATH
+    LOGGS_PATH: process.env.LOGGS_PATH,
+    NODEMAILER_USER: process.env.NODEMAILER_USER,
+    NODEMAILER_PASSWORD: process.env.NODEMAILER_PASSWORD
 }
 

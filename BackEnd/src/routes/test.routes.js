@@ -12,9 +12,9 @@ import { generateUserErrorInfo, generateProductErrorInfo } from "../services/err
 const routerTest = Router()
 const controller = new mockController()
 
-routerTest.get('/mockingusers', passportError('jwt'), authorization('admin'), controller.createRandomUser(100))
+routerTest.get('/mockingusers', passportError('jwt'), authorization(['admin']), controller.createRandomUser(100))
 
-routerTest.get('/mockingproducts', passportError('jwt'), authorization('user'), controller.createRandomProduct(100))
+routerTest.get('/mockingproducts', passportError('jwt'), authorization(['admin']), controller.createRandomProduct(100))
 
 routerTest.get('/loggerTest', async (req, res, next) => {
 
@@ -48,6 +48,10 @@ routerTest.get('/loggerTest', async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+})
+
+routerTest.get('/rolTest',passportError('jwt'), authorization(['user', 'premium']), async (req, res) => {
+    res.send(`Bienvenido: ${req.user.rol}`)
 })
 
 // routerTest.post('/errorUser', async (req, res, next) => {
