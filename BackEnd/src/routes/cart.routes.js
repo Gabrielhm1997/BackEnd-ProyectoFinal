@@ -7,11 +7,11 @@ const controller = new cartsController
 
 routerCarts.post('/', controller.postCart)// Crea un nuevo carrito vacio
 
-routerCarts.post('/:cid/products/:pid', controller.postProductInCart)// Agrega un producto por su id al carrito
+routerCarts.post('/:cid/products/:pid', passportError('jwt'), authorization(['user','premium']), controller.postProductInCart)// Agrega un producto por su id al carrito
 
 routerCarts.get('/:cid', controller.getProductsFromCart)// Lista los productos del carrito
 
-routerCarts.put('/:cid', controller.putArrayOnCart)// Agrega un array al carrito
+routerCarts.put('/:cid', passportError('jwt'), authorization(['user','premium']), controller.putArrayOnCart)// Agrega un array al carrito
 
 routerCarts.put('/:cid/products/:pid', controller.putUpdateProductCuantity)// Actualiza solo quantity 
 

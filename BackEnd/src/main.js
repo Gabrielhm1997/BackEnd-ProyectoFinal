@@ -15,8 +15,11 @@ import router from './routes/index.routes.js'
 import routerViews from './routes/views.routes.js'
 import initializePassport from "./config/passport.js"
 import { errorHandler } from './middlewares/errors/errorHandler.js'
-
-const whiteList = ['http://localhost:5173']
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUiExpress from 'swagger-ui-express'
+import { swaggerOptions } from './config/swagger.js'
+ 
+const whiteList = ['http://localhost:5173', 'http://localhost:8080']
 
 const corsOption = {
     origin: function (origin, callback){
@@ -31,7 +34,7 @@ const PORT = 8080
 //export default PORT
 const app = express()
 
-//app.use(cors(corsOption))
+app.use(cors(corsOption))
 
 // Conexion a Mongodb Atlas
 mongoose.connect(enviroment.MONGODB_ATLAS_API_KEY)
@@ -44,6 +47,9 @@ const server = app.listen(PORT, () => {
 })
 
 const io = new Server(server)
+
+//Swagger
+const specs = swaggerJSDoc(swaggerOptions)
 
 //Middlewares
 app.use(express.json())
@@ -67,6 +73,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 //Routes
+app.use ('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 app.use('/static', express.static('src/public')) // Rutas publicas
 app.use('/static', routerViews) // Ruta de vistas Handlebars
 app.use('/api', router) // Router de las rutas "API"

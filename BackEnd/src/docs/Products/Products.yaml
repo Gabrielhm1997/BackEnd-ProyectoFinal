@@ -1,0 +1,184 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtener todos los productos o aplicar algun filtro
+      tags:
+        - Products
+      parameters:
+        - name: type
+          in: query
+          schema: 
+            $type: String
+          description: Tipo de filtro de la busqueda por atributo del producto (title, price, etc)
+        - name: query
+          in: query
+          schema: 
+            $type: String
+          description: Filtro a aplicar
+        - name: limit
+          in: query
+          schema: 
+            $type: String
+          description: Cantidad de productos a mostrar por pagina
+        - name: page
+          in: query
+          schema: 
+            $type: Number
+          description: Numero de pagina a visualizar
+        - name: sort
+          in: query
+          schema: 
+            $type: String
+          description: Forma de ordenar, asc (ascendente), desc (descendente)
+      responses:
+        '200':
+          description: Productos obtenidos correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Error al buscar los productos
+  /api/products/{id}:
+    get: 
+      summary: Obtener un producto dado su ID de MongoDb
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            $type: String
+          description: Id del producto a buscar
+      responses:
+        '200':
+          description: Producto obtenido correctamente
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Error al buscar el producto o id de producto no valido  
+  /api/products:
+    post:
+      security:
+        - bearerAuth: []
+      summary: Crear un producto / User = admin
+      tags:
+        - Products
+      requestBody:
+        description: Datos del producto a Crear
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Producto creado exitosamente
+        '400':
+          description: Error al crear el producto o datos de nuevo producto no validos
+        '401':
+          description: Token no autenticado
+        '403':
+          description: Token no autorizado
+  /api/products/{pid}:
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Borrar un producto por si ID de MongoDb / User = admin
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema: 
+            $type: String
+          description: Id del producto a borrar
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+        '400':
+          description: Error al eliminar el producto o id no valido
+        '401':
+          description: Token no autenticado
+        '403':
+          description: Token no autorizado
+  /api/products/{Id}:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Modificar un producto / User = admin
+      tags:
+        - Products
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema: 
+            $type: String
+          description: Id del producto a modificar
+      requestBody:
+        description: Dato o datos del Producto a modificar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Producto modificado exitosamente
+        '400':
+          description: Error al modificar el producto o datos de nuevo producto no validos
+        '401':
+          description: Token no autenticado
+        '403':
+          description: Token no autorizado
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id autogenerado de MongoDB
+        title:
+          type: String
+          description: Nombre del producto
+        description:
+          type: String
+          description: Detalles del producto
+        price:
+          type: Number
+          description: Precio del usuario
+        stock:
+          type: Number
+          description: Stock real disponible
+        category:
+          type: String
+          description: Categoria del producto
+        status:
+          type: Boolean
+          description: Habilitado para comprar o no
+        code:
+          type: String
+          description: Codigo identificador del producto
+        thumbnails:
+          type: Array
+          description: Imagenes del producto
+      example:
+        _id: ObjectId('5asdwa8Eas7d527w7')
+        title: Mause
+        description: Genius
+        price: 2500
+        stock: 50
+        category: computacion
+        status: true
+        code: mause-genius-55w8a
+        thumbnails: [img1.jpg, img2.jpg]
+        

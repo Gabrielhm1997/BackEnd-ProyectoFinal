@@ -1,0 +1,41 @@
+paths:
+  /api/carts/{id}:
+    get: 
+      summary: Obtener un carrito por su ID de Mongodb
+      tags:
+        - Carts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            $type: String
+          description: Id del carrito a buscar
+      responses:
+        '200':
+          description: Productos del carrito obtenidos correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cart'
+        '400':
+          description: Error al buscar el carrito, id no valido o carrito vacio
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id autogenerado de MongoDB
+        products:
+          type: array
+          description: Productos del carrito
+      example:
+        [{id_prod: ObjectId(prod1), quantity: Number},
+        {id_prod: ObjectId(prod2), quantity: Number},
+        {id_prod: ObjectId(prodX), quantity: Number}]
+        
