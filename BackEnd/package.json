@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "app": "node src/main.js",
-    "dev": "nodemon src/main.js"
+    "dev": "nodemon src/main.js",
+    "testProducts": "mocha test/Products.test.js",
+    "testCarts": "mocha test/Carts.test.js",
+    "testSessions": "mocha test/Sessions.test.js"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +39,9 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
   }
 }

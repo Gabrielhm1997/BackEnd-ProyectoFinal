@@ -52,7 +52,7 @@ export class cartsController {
                     } else {
                         cartFound.products.push({ id_prod: pid, quantity: quantity })
                         await cartFound.save()
-                        res.status(200).send({ respuesta: 'OK', mensaje: cartFound.products })
+                        res.status(200).send({ respuesta: 'OK', products: cartFound.products })
                     }
                 } else {
                     //res.status(404).send(`Product Not Found`)
@@ -102,7 +102,7 @@ export class cartsController {
             if (cart) {
                 const products = cart.products
                 if (products.length > 0) {
-                    res.status(200).send(products)
+                    res.status(200).send({status: true, products: products ?? []})
                 } else {
                     //res.status(400).send("Cart empty")
                     CustomError.createError({
@@ -186,7 +186,7 @@ export class cartsController {
         }
     }
 
-    putUpdateProductCuantity = async (req, res) => {// Actualiza solo quantity 
+    putUpdateProductQuantity = async (req, res) => {// Actualiza solo quantity 
         const { cid, pid } = req.params
         const { quantity } = req.body
 
@@ -202,7 +202,7 @@ export class cartsController {
 
                     productCartFound.quantity = quantity
                     await cartFound.save()
-                    res.status(200).send({ respuesta: 'OK', mensaje: cartFound.products })
+                    res.status(200).send({ respuesta: 'OK', products: cartFound.products ?? [] })
 
                 } else {
 
@@ -258,7 +258,7 @@ export class cartsController {
                     const indice = cartFound.products.indexOf(productCartFound)
                     cartFound.products.splice(indice, 1)
                     await cartFound.save()
-                    res.status(200).send({ respuesta: 'OK', mensaje: cartFound.products })
+                    res.status(200).send({ status: true, products: cartFound.products ?? []})
 
                 } else {
                     res.status(404).send({ respuesta: 'Product does not exist in the cart', mensaje: cartFound.products })
@@ -272,7 +272,7 @@ export class cartsController {
             res.status(400).send({ error: e })
         }
     }
-
+    
     postPurchase = async (req, res) => {// Finalizar compra
         const { cid } = req.params
         let i = 0

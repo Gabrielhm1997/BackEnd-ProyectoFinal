@@ -33,7 +33,7 @@ export class productsController {
         try {
             const product = await productModel.findById(id) //Retorna el objeto o null
             if (product) {
-                res.status(200).send(product)
+                res.status(200).send({status: true, product: product})
             } else {
                 res.status(404).send(`Not Found`)
             }
@@ -58,7 +58,7 @@ export class productsController {
                 })
             } else {
                 const response = await productModel.create({ title, description, stock, code, price, category }) // Devuelve el objeto creado 
-                res.status(200).send(`Product created successfully`)
+                res.status(201).send({status: true, product: response})
             }
         } catch (error) {             
             next(error)                                                                       // Cualquier tipo de error lo captura el Catch
@@ -72,9 +72,10 @@ export class productsController {
 
         try {
             const response = await productModel.findByIdAndUpdate(id, { title, description, stock, code, price, category, status }) //Retorna el objeto o null
+            const product = await productModel.findById(id)
 
             if (response) {
-                res.status(200).send(`Product updated successfully`)
+                res.status(200).send({status: true, product: product})
             } else {
                 res.status(404).send(`Not Found`)
             }
@@ -91,7 +92,7 @@ export class productsController {
             const response = await productModel.findByIdAndDelete(id) //Retorna el objeto o null
 
             if (response) {
-                res.status(200).send(`Product deleted successfully`)
+                res.status(200).send({status: true, product: undefined})
             } else {
                 res.status(404).send(`Not Found`)
             }

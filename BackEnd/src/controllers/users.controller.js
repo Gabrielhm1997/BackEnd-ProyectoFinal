@@ -25,14 +25,12 @@ export class usersController {
                 httpOnly: true,
                 maxAge: 43200000
             })
-            res.status(200).send({ mensaje: 'Usuario creado' })
+            res.status(201).send({ status: true, token: token })
         } catch (error) {
             res.status(500).send({ mensaje: `Error al crear usuario ${error}` })
         }
     }
-
-
-
+ 
     postPasswordRecovery = async (req, res, next) => {
         const { email } = req.body
 

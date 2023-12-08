@@ -32,8 +32,15 @@ const initializePassport = () => {
     }
 
     const cookieExtractor = req => {
-        const token = req.cookies ? req.cookies.jwtCookie : {} //req.cookies ? req.cookies.jwtCookie : {}
-        return token
+        // const token = req.cookies ? req.cookies.jwtCookie : {} //req.cookies ? req.cookies.jwtCookie : {}
+        // return token
+
+        let headerToken = req.headers ? req.headers.authorization : null;
+        const cookiesToken = req.cookies ? req.cookies.jwtCookie : null;
+
+        headerToken = headerToken ? headerToken.replace('Bearer ', '') : null;
+
+        return headerToken || cookiesToken || {};
     }
 
     passport.use('jwt', new JWTStrategy({
@@ -53,15 +60,15 @@ const initializePassport = () => {
         const { first_name, last_name, email, age } = req.body
         try {
             if (!first_name || !last_name || !email || !age) {
-        
+
                 CustomError.createError({
                     name: "User creation Error",
-                    cause: generateUserErrorInfo({first_name,last_name,email, age}),
+                    cause: generateUserErrorInfo({ first_name, last_name, email, age }),
                     message: "Error Trying to create User",
                     code: EErrors.INVALID_TYPE,
                     level: 3
                 })
-            }    
+            }
             const user = await userModel.findOne({ email: email })
 
             if (user) {
@@ -93,7 +100,7 @@ const initializePassport = () => {
 
         try {
             const user = await userModel.findOne({ email: username })
-            
+
             if (!user) {
                 return done(null, false)
             } else if (validatePassword(password, user.password)) {
