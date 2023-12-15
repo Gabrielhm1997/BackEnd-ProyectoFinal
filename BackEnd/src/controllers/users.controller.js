@@ -106,4 +106,51 @@ export class usersController {
             next(error)
         }
     }
+
+    postUploadDocument = async (req, res, next) => {
+
+        try {
+    
+            if (!req.files) {
+                CustomError.createError({
+                    name: "File Upload Error",
+                    cause: "Error de Multer",
+                    message: "Error Trying to upload File",
+                    code: EErrors.INVALID_TYPE,
+                    level: 2
+                })
+            }
+            const uploadedDocuments = req.files
+            const user = await userModel.findById(req.user.id)
+            const userDocuments = user.documents ?? []
+            let i = 0
+    
+            const updateUserDocuments = async () => {
+    
+                if (i < uploadedDocuments.length) {
+    
+                    const newDocument = {
+                        originalname: uploadedDocuments[i].originalname,
+                        name: uploadedDocuments[i].filename,
+                        reference: uploadedDocuments[i].path
+                    }
+                    const documentFound = userDocuments.find(document => document.originalname == newDocument.originalname)
+                    
+                    if (documentFound) {
+                        i++
+                        updateUserDocuments()
+                    } else {
+                        userDocuments.push(newDocument)
+                        await userModel.findByIdAndUpdate(req.user.id, { documents: userDocuments })
+                        i++
+                        updateUserDocuments()
+                    }
+                }
+            }
+            updateUserDocuments()
+            res.status(200).send("Archivo/s subido")
+        } catch (error) {
+            next(error)
+        }
+    }
 }

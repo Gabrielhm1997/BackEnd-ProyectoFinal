@@ -1,0 +1,1 @@
+Profe tengo una duda de la practica integradora, Multer sube los documentos a la carpeta del proyecto y no a la base de datos?
