@@ -2,6 +2,7 @@ import { Router } from "express"
 import passport from "passport"
 import { passportError, authorization } from '../utils/messageErrors.js'
 import { generateToken } from "../utils/jwt.js"
+import userModel from "../models/users.models.js"
 
 const routerSessions = Router()
  
@@ -57,7 +58,10 @@ routerSessions.get('/github', passport.authenticate('github', { scope: ['user:em
     }
 })
 
-routerSessions.get('/logout', (req, res) => { //Logout
+routerSessions.get('/logout', async (req, res) => { //Logout
+    
+    await userModel.findByIdAndUpdate(req.user.id, {last_connection: new Date()})
+
     if (req.session) {
         req.session.destroy()
     }

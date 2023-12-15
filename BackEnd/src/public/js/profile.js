@@ -14,10 +14,10 @@ fetch(`http://localhost:8080/api/sessions/current`)
 
         if (res.status) {
 
-            greeting.innerHTML = `Bienvenido ${res.data.first_name}`
-            user.innerHTML = `Usuario: ${res.data.first_name} ${res.data.last_name}`
-            email.innerHTML = `Email: ${res.data.email}`
-            age.innerHTML = `Edad: ${res.data.age}`
+            greeting.innerHTML = `Bienvenido ${res.user.first_name}`
+            user.innerHTML = `Usuario: ${res.user.first_name} ${res.user.last_name}`
+            email.innerHTML = `Email: ${res.user.email}`
+            age.innerHTML = `Edad: ${res.user.age}`
 
         } else {
             console.log(res.error)

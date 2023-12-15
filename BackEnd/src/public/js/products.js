@@ -7,12 +7,12 @@ fetch(`http://localhost:8080/api/sessions/current`)
         console.log(res)
 
         if (res.status) {
-            if (res.data.rol == "admin") {
+            if (res.user.rol == "admin") {
                 greeting.innerHTML = `Bienvenido Admin`
                 specialButton.innerHTML = ` <a href="http://localhost:8080/static/admin"><button> Admin </button></a> `
 
             } else {
-                greeting.innerHTML = `Bienvenido ${res.data.first_name}`
+                greeting.innerHTML = `Bienvenido ${res.user.first_name}`
                 specialButton.innerHTML = ` <a href="http://localhost:8080/static/profile"><button> Perfil </button></a>  `
             }
         } else {

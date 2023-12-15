@@ -50,9 +50,9 @@ routerTest.get('/loggerTest', async (req, res, next) => {
     }
 })
 
-routerTest.get('/rolTest',passportError('jwt'), authorization(['user', 'premium']), async (req, res) => {
-    res.send(`Bienvenido: ${req.user.rol}`)
-})
+// routerTest.get('/rolTest',passportError('jwt'), authorization(['user', 'premium']), async (req, res) => {
+//     res.send(`Bienvenido: ${req.user.rol}`)
+// })
 
 // routerTest.post('/errorUser', async (req, res, next) => {
 
