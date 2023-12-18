@@ -25,6 +25,8 @@ routerSessions.post('/login', passport.authenticate('login'), async (req, res) =
             //     rol: req.user.rol
             // }
 
+            await userModel.findByIdAndUpdate(req.user.id, {last_connection: new Date()})
+
             const token = generateToken(req.user)
             
             res.cookie('jwtCookie', token, {
@@ -40,6 +42,7 @@ routerSessions.post('/login', passport.authenticate('login'), async (req, res) =
 
 routerSessions.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { //Login GitHub
     // req.session.user = req.user
+    await userModel.findByIdAndUpdate(req.user.id, {last_connection: new Date()})
     const token = generateToken(req.user)
             
     res.cookie('jwtCookie', token, {
