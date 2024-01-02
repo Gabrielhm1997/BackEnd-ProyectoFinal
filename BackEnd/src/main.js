@@ -19,7 +19,7 @@ import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUiExpress from 'swagger-ui-express'
 import { swaggerOptions } from './config/swagger.js'
  
-const whiteList = ['http://localhost:5173', 'http://localhost:8080']
+const whiteList = ['http://localhost:5173', 'http://localhost:8080', 'http://localhost:3000']
 
 const corsOption = {
     origin: function (origin, callback){
@@ -30,7 +30,7 @@ const corsOption = {
         }
     }
 }
-const PORT = 8080
+const PORT = 3000
 //export default PORT
 const app = express()
 

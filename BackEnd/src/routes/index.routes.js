@@ -7,7 +7,7 @@ import routerTest from "./test.routes.js"
 
 const router = Router()
 
-router.use('/sessions', routerSessions)
+router.use('/session', routerSessions)
 router.use('/users', routerUsers)
 router.use('/products', routerProducts)
 router.use('/carts', routerCarts)

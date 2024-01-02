@@ -60,7 +60,7 @@ const initializePassport = () => {
 
         const { first_name, last_name, email, age } = req.body
         try {
-            if (!first_name || !last_name || !email || !age) {
+            if (!first_name || !last_name || !email) {
 
                 CustomError.createError({
                     name: "User creation Error",
@@ -87,7 +87,7 @@ const initializePassport = () => {
                     first_name: first_name,
                     last_name: last_name,
                     email: email,
-                    age: age,
+                    age: age ?? 18,
                     password: passwordHash
                 })
                 return done(null, safeUser(newUser))

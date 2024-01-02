@@ -11,5 +11,7 @@ routerUsers.post('/', passport.authenticate('register'), controller.postUser)
 routerUsers.post('/password-recovery', controller.postPasswordRecovery)
 routerUsers.post('/reset-password/:token', controller.postResetPassword)
 routerUsers.post('/:uid/documents', passportError('jwt'), upload.array('userDocument', 10), controller.postUploadDocument)
+routerUsers.get('/', controller.getAllUsers)
+routerUsers.delete('/', controller.deleteInactiveUsers)
 
 export default routerUsers

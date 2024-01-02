@@ -3,11 +3,13 @@ import passport from "passport"
 import { passportError, authorization } from '../utils/messageErrors.js'
 import { generateToken } from "../utils/jwt.js"
 import userModel from "../models/users.models.js"
+import CustomError from "../services/errors/CustomError.js"
+import EErrors from "../services/errors/enums.js"
 
 const routerSessions = Router()
- 
+
 routerSessions.get('/current', passportError('jwt'), async (req, res) => {
-    res.status(200).send({ status: true, user: req.user})
+    res.status(200).send({ status: true, user: req.user })
 })
 
 routerSessions.post('/login', passport.authenticate('login'), async (req, res) => {//Login
@@ -25,15 +27,15 @@ routerSessions.post('/login', passport.authenticate('login'), async (req, res) =
             //     rol: req.user.rol
             // }
 
-            await userModel.findByIdAndUpdate(req.user.id, {last_connection: new Date()})
+            await userModel.findByIdAndUpdate(req.user.id, { last_connection: new Date() })
 
             const token = generateToken(req.user)
-            
+
             res.cookie('jwtCookie', token, {
                 httpOnly: true,
                 maxAge: 43200000
-            }) 
-            res.status(200).send({ status: true, token: token  })//req.user
+            })
+            res.status(200).send({ status: true, token: token })//req.user
         }
     } catch (error) {
         res.status(500).send({ status: false, error: `Error al iniciar sesion ${error}` })
@@ -42,14 +44,14 @@ routerSessions.post('/login', passport.authenticate('login'), async (req, res) =
 
 routerSessions.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { //Login GitHub
     // req.session.user = req.user
-    await userModel.findByIdAndUpdate(req.user.id, {last_connection: new Date()})
+    await userModel.findByIdAndUpdate(req.user.id, { last_connection: new Date() })
     const token = generateToken(req.user)
-            
+
     res.cookie('jwtCookie', token, {
         httpOnly: true,
         maxAge: 43200000
-    }) 
-    
+    })
+
     if (req.user) {//req.session.user
         res.status(200).redirect('/static/products')
     } else {
@@ -61,15 +63,29 @@ routerSessions.get('/github', passport.authenticate('github', { scope: ['user:em
     }
 })
 
-routerSessions.get('/logout', async (req, res) => { //Logout
-    
-    await userModel.findByIdAndUpdate(req.user.id, {last_connection: new Date()})
+routerSessions.get('/logout', async (req, res, next) => { //Logout
+    try {
+        if (!req.user) {
+            CustomError.createError({
+                name: 'Logout Error',
+                cause: 'No hay ningun usuario logueado',
+                message: 'Usuario no logueado',
+                code: EErrors.VOID_OBJECT,
+                level: 3,
+            })
+        }
 
-    if (req.session) {
-        req.session.destroy()
+        await userModel.findByIdAndUpdate(req.user.id, { last_connection: new Date() })
+
+        if (req.session) {
+            req.session.destroy()
+        }
+        res.clearCookie('jwtCookie')
+        res.status(200).send({ status: true, data: 'Login eliminado' })
+    } catch (error) {
+        next(error)
     }
-    res.clearCookie('jwtCookie')
-    res.status(200).send({ status: true, data: 'Login eliminado' })
+
 })
 
 export default routerSessions

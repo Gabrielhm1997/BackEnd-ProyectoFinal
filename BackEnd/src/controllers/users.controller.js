@@ -13,10 +13,17 @@ export class usersController {
         this.recoveryLinks = [{}]
     }
 
-    postUser = async (req, res) => {
+    postUser = async (req, res, next) => {
         try {
             if (!req.user) {
-                res.status(400).send({ status: false, mensaje: 'Usuario ya existente' })
+                //res.status(400).send({ status: false, mensaje: 'Usuario ya existente' })
+                CustomError.createError({
+                    name: 'Register Error',
+                    cause: 'Usuario ya existente',
+                    message: 'Yo existe un usuario registrado con ese email',
+                    code: EErrors.DATABASE,
+                    level: 3,
+                })
             }
 
             const token = generateToken(req.user)
@@ -27,10 +34,11 @@ export class usersController {
             })
             res.status(201).send({ status: true, token: token })
         } catch (error) {
-            res.status(500).send({ mensaje: `Error al crear usuario ${error}` })
+            //res.status(500).send({ mensaje: `Error al crear usuario ${error}` })
+            next(error)
         }
     }
- 
+
     postPasswordRecovery = async (req, res, next) => {
         const { email } = req.body
 
@@ -110,7 +118,7 @@ export class usersController {
     postUploadDocument = async (req, res, next) => {
 
         try {
-    
+
             if (!req.files) {
                 CustomError.createError({
                     name: "File Upload Error",
@@ -124,18 +132,18 @@ export class usersController {
             const user = await userModel.findById(req.user.id)
             const userDocuments = user.documents ?? []
             let i = 0
-    
+
             const updateUserDocuments = async () => {
-    
+
                 if (i < uploadedDocuments.length) {
-    
+
                     const newDocument = {
                         originalname: uploadedDocuments[i].originalname,
                         name: uploadedDocuments[i].filename,
                         reference: uploadedDocuments[i].path
                     }
                     const documentFound = userDocuments.find(document => document.originalname == newDocument.originalname)
-                    
+
                     if (documentFound) {
                         i++
                         updateUserDocuments()
@@ -149,6 +157,57 @@ export class usersController {
             }
             updateUserDocuments()
             res.status(200).send("Archivo/s subido")
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getAllUsers = async (req, res, next) => {
+        try {
+            const rawUsers = await userModel.find()
+
+            const users = rawUsers.map((rawUser) => {
+
+                return {
+                    first_name: rawUser.first_name,
+                    last_name: rawUser.last_name ?? undefined,
+                    email: rawUser.email,
+                    rol: rawUser.rol,
+                    age: rawUser.age
+                }
+            })
+
+            res.status(200).send({ status: true, users: users })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    deleteInactiveUsers = async (req, res, next) => {
+        try {
+            const rawUsers = await userModel.find()
+
+            const currentDate = new Date()
+
+            const filteredUsers = rawUsers.filter(rawUser =>  currentDate.getTime() - rawUser.last_connection.getTime() > 1800000 )//7200000
+
+            console.log(filteredUsers)
+
+            let i = 0
+            
+            const deleteFilterUsers = async () => {
+
+                if(filteredUsers.length > i){
+                    await userModel.findByIdAndRemove(filteredUsers[i]._id)
+                    i++
+                    deleteFilterUsers()
+                }
+            }
+
+            deleteFilterUsers()
+
+            res.status(200).send({ status: true, filteredUsers: filteredUsers })
+
         } catch (error) {
             next(error)
         }

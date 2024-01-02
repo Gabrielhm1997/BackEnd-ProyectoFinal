@@ -48,14 +48,12 @@ export class cartsController {
                             code: EErrors.INVALID_TYPE,
                             level: 3
                         })
-                        //res.status(400).send({ respuesta: 'OK', mensaje: 'The product already exists in the cart, please use the corresponding PUT method' })
                     } else {
                         cartFound.products.push({ id_prod: pid, quantity: quantity })
                         await cartFound.save()
-                        res.status(200).send({ respuesta: 'OK', products: cartFound.products })
+                        res.status(200).send({ respuesta: true, products: cartFound.products })
                     }
                 } else {
-                    //res.status(404).send(`Product Not Found`)
                     CustomError.createError({
                         name: "Load Product Into Cart",
                         cause: "Product Not Found",
@@ -65,7 +63,6 @@ export class cartsController {
                     })
                 }
             } else {
-                //res.status(404).send(`Cart Not Found`)
                 CustomError.createError({
                     name: "Load Product Into Cart",
                     cause: "Cart Not Found",
@@ -76,7 +73,6 @@ export class cartsController {
             }
         } catch (error) {
             next(error)
-            // res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 
@@ -344,23 +340,3 @@ export class cartsController {
         }
     }
 }
-// try {
-//     cart.products.map(async (product) => {
-
-//         if (product.quantity > ((await productModel.findById(product.id_prod)).stock)) {
-//             console.log("mayor")
-//         } else if (product.quantity <= ((await productModel.findById(product.id_prod)).stock)) {
-//             console.log("menor-igual")
-//             validProducts.push(product)
-//         } else {
-//             console.log(false)
-//         }
-
-//         //console.log((await productModel.findById(product.id_prod)).stock)
-//     })
-//     console.log(validProducts)
-//     res.status(200).send({ validProducts: validProducts })
-// } catch (error) {
-//     console.log(error)
-// }
-//const validProducts = cart.products.filter(async (product) => product.quantity <= ((await productModel.findById(product.id_prod)).stock))
