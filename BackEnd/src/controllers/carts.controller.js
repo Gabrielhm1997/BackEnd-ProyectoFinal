@@ -8,13 +8,13 @@ import { generateProductIntoCartErrorInfo } from "../services/errors/info.js"
 
 export class cartsController {
 
-    postCart = async (req, res) => {// Crea un nuevo carrito Vacio
+    postCart = async (req, res, next) => {// Crea un nuevo carrito Vacio
         try {
             const cart = await cartModel.create({})
             res.status(201).send(cart)
 
         } catch (error) {
-            res.status(400).send(`Error creating a new cart: ${error}`)
+            next(error)
         }
     }
 
@@ -100,7 +100,6 @@ export class cartsController {
                 if (products.length > 0) {
                     res.status(200).send({ status: true, products: products ?? [] })
                 } else {
-                    //res.status(400).send("Cart empty")
                     CustomError.createError({
                         name: "Get Products From Cart",
                         cause: "Empty Cart",
@@ -110,7 +109,6 @@ export class cartsController {
                     })
                 }
             } else {
-                //res.status(404).send(`Cart Not Found`)
                 CustomError.createError({
                     name: "Get Cart From DataBase",
                     cause: "Cart Not Found",
@@ -121,7 +119,6 @@ export class cartsController {
             }
         } catch (error) {
             next(error)
-            //res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
         }
     }
 
@@ -134,7 +131,7 @@ export class cartsController {
         }
     }
 
-    putArrayOnCart = async (req, res) => {// Agrega un array al carrito
+    putArrayOnCart = async (req, res, next) => {// Agrega un array al carrito
         const { cid } = req.params
         const { arrayProducts } = req.body
 
@@ -175,7 +172,7 @@ export class cartsController {
                                     recursiva()
                                 }
                             } catch (error) {
-                                res.status(400).send(`Error: ${error}`)
+                                next(error)
                             }
                         }
                     } else {
@@ -184,14 +181,21 @@ export class cartsController {
                 }
                 recursiva()
             } else {
-                res.status(404).send('Cart not found')
+
+                CustomError.createError({
+                    name: "Load Product Into Cart",
+                    cause: "Cart not Found",
+                    message: "Carrito no encontrado en la Base de Datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
         } catch (error) {
-            res.status(400).send(`Error: ${error}`)
+            next(error)
         }
     }
 
-    putUpdateProductQuantity = async (req, res) => {// Actualiza solo quantity 
+    putUpdateProductQuantity = async (req, res, next) => {// Actualiza solo quantity 
         const { cid, pid } = req.params
         const { quantity } = req.body
 
@@ -207,23 +211,32 @@ export class cartsController {
 
                     productCartFound.quantity = quantity
                     await cartFound.save()
-                    res.status(200).send({ respuesta: 'OK', products: cartFound.products ?? [] })
+                    res.status(200).send({ status: true, products: cartFound.products ?? [] })
 
                 } else {
-
-                    res.status(404).send({ respuesta: 'Product does not exist in the cart', mensaje: cartFound.products })
+                    CustomError.createError({
+                        name: "Modify Product Quantity",
+                        cause: "Product not Found in Cart",
+                        message: "El producto no se encuentra cargado en el carrito",
+                        code: EErrors.DATABASE,
+                        level: 3
+                    })
                 }
-
             } else {
-                res.status(404).send(`Cart Not Found`)
+                CustomError.createError({
+                    name: "Modify Product Quantity",
+                    cause: "Cart not Found",
+                    message: "Carrito no encontrado en la Base de Datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
-
-        } catch (e) {
-            res.status(400).send({ error: e })
+        } catch (error) {
+            next(error)
         }
     }
 
-    deleteEmptyCart = async (req, res) => {// Vaciar el carrito
+    deleteEmptyCart = async (req, res, next) => {// Vaciar el carrito
 
         const { cid } = req.params
 
@@ -239,15 +252,21 @@ export class cartsController {
                 res.status(200).send(cartFound)
 
             } else {
-                res.status(404).send(`Cart Not Found`)
+                CustomError.createError({
+                    name: "Empty Cart",
+                    cause: "Cart not Found",
+                    message: "Carrito no encontrado en la Base de Datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
 
         } catch (error) {
-            res.status(400).send(error)
+            next(error)
         }
     }
 
-    deleteProductFromCart = async (req, res) => {// Elimina un producto especifico del carrito
+    deleteProductFromCart = async (req, res, next) => {// Elimina un producto especifico del carrito
         const { cid, pid } = req.params
 
         try {
@@ -266,25 +285,35 @@ export class cartsController {
                     res.status(200).send({ status: true, products: cartFound.products ?? [] })
 
                 } else {
-                    res.status(404).send({ respuesta: 'Product does not exist in the cart', mensaje: cartFound.products })
+                    CustomError.createError({
+                        name: "Delete Product from Cart",
+                        cause: "Product not Found in Cart",
+                        message: "El producto no se encuentra cargado en el carrito",
+                        code: EErrors.DATABASE,
+                        level: 3
+                    })
                 }
-
             } else {
-                res.status(404).send(`Cart Not Found`)
+                CustomError.createError({
+                    name: "Delete Product from Cart",
+                    cause: "Cart not Found",
+                    message: "Carrito no encontrado en la Base de Datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
-
         } catch (e) {
-            res.status(400).send({ error: e })
+            next(error)
         }
     }
 
-    postPurchase = async (req, res) => {// Finalizar compra
+    postPurchase = async (req, res, next) => {// Finalizar compra
         const { cid } = req.params
         let i = 0
 
-        if (req.user.cart == cid) {
-            try {
 
+        try {
+            if (req.user.cart == cid) {
                 const cart = await cartModel.findById(cid)
 
                 if (cart) {
@@ -327,25 +356,48 @@ export class cartsController {
                                     cart.products = []
                                     await cart.save()
 
-                                    res.status(200).send({ ticket: ticket })//, validProducts: validProducts, total: total 
+                                    res.status(200).send({status: true, ticket: ticket })
                                 } else {
-                                    res.status(400).send({ error: "Empty Cart" })
+                                    CustomError.createError({
+                                        name: "Purchase Error",
+                                        cause: "Empty Cart",
+                                        message: "Carrito Vacio",
+                                        code: EErrors.VOID_OBJECT,
+                                        level: 3
+                                    })
                                 }
                             }
                         }
                         asyncFilter()
                     } else {
-                        res.status(400).send({ error: "Empty Cart" })
+                        CustomError.createError({
+                            name: "Purchase Error",
+                            cause: "Empty Cart",
+                            message: "Carrito Vacio",
+                            code: EErrors.VOID_OBJECT,
+                            level: 3
+                        })
                     }
                 } else {
-                    res.status(404).send({ error: "Not found" })
+                    CustomError.createError({
+                        name: "Purchase Error",
+                        cause: "Cart not Found",
+                        message: "Carrito no encontrado en la Base de Datos",
+                        code: EErrors.DATABASE,
+                        level: 3
+                    })
                 }
-
-            } catch (error) {
-                res.status(400).send({ error: error })
+            } else {
+                CustomError.createError({
+                    name: "Purchase Error",
+                    cause: "Invalid Cart",
+                    message: "El Carrito no coincide con el carrito del Usuario",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
-        } else {
-            res.status(400).send({ error: "Invalid Cart" })
+        } catch (error) {
+            next(error)
         }
     }
 }

@@ -15,11 +15,11 @@ routerCarts.get('/', passportError('jwt'), authorization(['admin']), controller.
 
 routerCarts.put('/:cid', passportError('jwt'), authorization(['user','premium']), controller.putArrayOnCart)// Agrega un array al carrito
 
-routerCarts.put('/:cid/product/:pid', controller.putUpdateProductQuantity)// Actualiza solo quantity 
+routerCarts.put('/:cid/product/:pid', passportError('jwt'), authorization(['user','premium']), controller.putUpdateProductQuantity)// Actualiza solo quantity 
 
-routerCarts.delete('/:cid', controller.deleteEmptyCart)// Vaciar el carrito
+routerCarts.delete('/:cid', passportError('jwt'), authorization(['user','premium']), controller.deleteEmptyCart)// Vaciar el carrito
 
-routerCarts.delete('/:cid/product/:pid', controller.deleteProductFromCart)// Elimina un producto especifico del carrito
+routerCarts.delete('/:cid/product/:pid', passportError('jwt'), authorization(['user','premium']), controller.deleteProductFromCart)// Elimina un producto especifico del carrito
 
 routerCarts.post('/:cid/purchase', passportError('jwt'), authorization(['user','premium']), controller.postPurchase)// Finalizar compra
 

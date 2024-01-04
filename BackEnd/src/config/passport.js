@@ -33,8 +33,6 @@ const initializePassport = () => {
     }
 
     const cookieExtractor = req => {
-        // const token = req.cookies ? req.cookies.jwtCookie : {} //req.cookies ? req.cookies.jwtCookie : {}
-        // return token
 
         let headerToken = req.headers ? req.headers.authorization : null;
         const cookiesToken = req.cookies ? req.cookies.jwtCookie : null;
@@ -56,7 +54,7 @@ const initializePassport = () => {
         }
     }))
 
-    passport.use('register', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => { // -- HandlerError
+    passport.use('register', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {// -- HandlerError
 
         const { first_name, last_name, email, age } = req.body
         try {
@@ -73,7 +71,6 @@ const initializePassport = () => {
             const user = await userModel.findOne({ email: email })
 
             if (user) {
-                //return done(null, false)
                 CustomError.createError({
                     name: "User creation Error",
                     cause: "User Alredy Registered",
@@ -97,20 +94,31 @@ const initializePassport = () => {
         }
     }))
 
-    passport.use('login', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
+    passport.use('login', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {// -- HandlerError
 
         try {
             const user = await userModel.findOne({ email: username })
 
             if (!user) {
-                return done(null, false)
+                CustomError.createError({
+                    name: "Login Error",
+                    cause: "Usuario o contraseña incorrectos",
+                    message: "Usuario o contraseña incorrectos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             } else if (validatePassword(password, user.password)) {
                 return done(null, safeUser(user)) //Usuario y contraseña validos
             } else {
-                return done(null, false) //Contraseña no valida
+                CustomError.createError({
+                    name: "Login Error",
+                    cause: "Usuario o contraseña incorrectos",
+                    message: "Usuario o contraseña incorrectos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
         } catch (error) {
-            console.log(error)
             return done(error, false)
         }
     }))
@@ -123,9 +131,6 @@ const initializePassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
 
         try {
-            // console.log(accessToken)
-            // console.log(refreshToken)
-            // console.log(enviroment.CALLBACK_URL)
             const user = await userModel.findOne({ email: profile._json.email })
 
             if (user) {

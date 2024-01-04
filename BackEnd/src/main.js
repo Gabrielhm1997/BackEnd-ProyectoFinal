@@ -30,7 +30,7 @@ const corsOption = {
         }
     }
 }
-const PORT = 8080
+const PORT = 3000
 //export default PORT
 const app = express()
 
