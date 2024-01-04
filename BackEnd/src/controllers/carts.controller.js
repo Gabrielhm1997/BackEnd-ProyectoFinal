@@ -11,7 +11,7 @@ export class cartsController {
     postCart = async (req, res, next) => {// Crea un nuevo carrito Vacio
         try {
             const cart = await cartModel.create({})
-            res.status(201).send(cart)
+            res.status(201).send({status: true, cart: cart})
 
         } catch (error) {
             next(error)
@@ -51,7 +51,7 @@ export class cartsController {
                     } else {
                         cartFound.products.push({ id_prod: pid, quantity: quantity })
                         await cartFound.save()
-                        res.status(200).send({ respuesta: true, products: cartFound.products })
+                        res.status(200).send({ status: true, products: cartFound.products })
                     }
                 } else {
                     CustomError.createError({
@@ -176,7 +176,7 @@ export class cartsController {
                             }
                         }
                     } else {
-                        res.status(200).send({ status: "OK", cart: cartFound, invalidProducts: invalidProducts })
+                        res.status(200).send({ status: true, cart: cartFound, invalidProducts: invalidProducts })
                     }
                 }
                 recursiva()
@@ -249,7 +249,7 @@ export class cartsController {
                 cartFound.products = []
                 await cartFound.save()
 
-                res.status(200).send(cartFound)
+                res.status(200).send({status: true, cart: cartFound})
 
             } else {
                 CustomError.createError({

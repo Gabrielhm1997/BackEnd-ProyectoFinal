@@ -6,14 +6,14 @@ const routerProducts = Router()
 const controller = new productsController()
 
 // ?type=title&query=teclado&limit=3&page=1&sort=desc
-routerProducts.get('/', controller.getProducts)
+routerProducts.get('/', controller.getProducts)// Devuelve los productos segun el filtro
 
-routerProducts.get('/:id', controller.getProductByID)
+routerProducts.get('/:id', controller.getProductByID)// Devuelve un producto segun su ID
 
-routerProducts.post('/', passportError('jwt'), authorization(['admin']), controller.postProduct)
+routerProducts.post('/', passportError('jwt'), authorization(['admin']), controller.postProduct)// Crea un producto
 
-routerProducts.put('/:id', passportError('jwt'), authorization(['admin']), controller.putProduct)
+routerProducts.put('/:id', passportError('jwt'), authorization(['admin']), controller.putProduct)// Modifica un producto
 
-routerProducts.delete('/:id', passportError('jwt'), authorization(['admin']), controller.deleteProduct)
+routerProducts.delete('/:id', passportError('jwt'), authorization(['admin']), controller.deleteProduct)// Elimina un producto
 
 export default routerProducts

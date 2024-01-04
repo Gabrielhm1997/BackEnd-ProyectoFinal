@@ -7,7 +7,7 @@ import { generateProductErrorInfo } from "../services/errors/info.js"
 export class productsController {
     constructor() { }
 
-    getProducts = async (req, res) => {
+    getProducts = async (req, res, next) => {// Devuelve los productos segun el filtro
         // ?type=title&query=teclado&limit=3&page=1&sort=desc
         const { limit, page, sort, type, query } = req.query
 
@@ -22,27 +22,33 @@ export class productsController {
             const response = { status: true, ...inventory }
             res.status(200).send(response)
         } catch (error) {
-            res.status(400).send({ status: false, error: error })
+            next(error)
         }
     }
 
-    getProductByID = async (req, res) => {
+    getProductByID = async (req, res, next) => {// Devuelve un producto por su ID
 
         const { id } = req.params
 
         try {
-            const product = await productModel.findById(id) //Retorna el objeto o null
+            const product = await productModel.findById(id)
             if (product) {
                 res.status(200).send({status: true, product: product})
             } else {
-                res.status(404).send(`Not Found`)
+                CustomError.createError({
+                    name: "Get Product Error",
+                    cause: "Product Not Found",
+                    message: "El producto no se encuentra en la base de datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
         } catch (error) {
-            res.status(400).send(`Error checking inventory: ${error}`)
+            next(error)
         }
     }
 
-    postProduct = async (req, res, next) => { // Crea un producto -- HandlerError
+    postProduct = async (req, res, next) => { // Crea un producto
         const { title, description, stock, code, price, category } = req.body
 
         try {
@@ -57,16 +63,15 @@ export class productsController {
                     level: 3
                 })
             } else {
-                const response = await productModel.create({ title, description, stock, code, price, category }) // Devuelve el objeto creado 
+                const response = await productModel.create({ title, description, stock, code, price, category })
                 res.status(201).send({status: true, product: response})
             }
         } catch (error) {             
-            next(error)                                                                       // Cualquier tipo de error lo captura el Catch
-            //res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
+            next(error)
         }
     }
 
-    putProduct = async (req, res) => {
+    putProduct = async (req, res, next) => {
         const { id } = req.params
         const { title, description, stock, code, price, category, status } = req.body
 
@@ -77,15 +82,21 @@ export class productsController {
             if (response) {
                 res.status(200).send({status: true, product: product})
             } else {
-                res.status(404).send(`Not Found`)
+                CustomError.createError({
+                    name: "Put Product Error",
+                    cause: "Product Not Found",
+                    message: "El producto no se encuentra en la base de datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
 
         } catch (error) {
-            res.status(400).send(`Error updating product: ${error}`)
+            next(error)
         }
     }
 
-    deleteProduct = async (req, res) => {
+    deleteProduct = async (req, res, next) => {
         const { id } = req.params
 
         try {
@@ -94,10 +105,16 @@ export class productsController {
             if (response) {
                 res.status(200).send({status: true, product: undefined})
             } else {
-                res.status(404).send(`Not Found`)
+                CustomError.createError({
+                    name: "Delete Product Error",
+                    cause: "Product Not Found",
+                    message: "El producto no se encuentra en la base de datos",
+                    code: EErrors.DATABASE,
+                    level: 3
+                })
             }
         } catch (error) {
-            res.status(400).send(`Error deleting product: ${error}`)
+            next(error)
         }
     }
 }

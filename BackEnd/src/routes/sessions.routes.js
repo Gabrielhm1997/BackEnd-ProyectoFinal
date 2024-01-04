@@ -1,6 +1,6 @@
 import { Router } from "express"
 import passport from "passport"
-import { passportError, authorization } from '../utils/messageErrors.js'
+import { passportError} from '../utils/messageErrors.js'
 import { generateToken } from "../utils/jwt.js"
 import userModel from "../models/users.models.js"
 import CustomError from "../services/errors/CustomError.js"
@@ -8,7 +8,7 @@ import EErrors from "../services/errors/enums.js"
 
 const routerSessions = Router()
 
-routerSessions.get('/current', passportError('jwt'), async (req, res) => {
+routerSessions.get('/current', passportError('jwt'), async (req, res) => {// Devuelve la sesion actual
     res.status(200).send({ status: true, user: req.user })
 })
 

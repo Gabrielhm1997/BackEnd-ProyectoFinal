@@ -17,17 +17,6 @@ export class mockController {
         }
     }
 
-    randomCategory = () => {
-
-        const i = faker.number.int({ min: 1, max: 3 })
-
-        switch (i) {
-            case 1: return "Computacion"
-            case 2: return "Alimentos"
-            case 3: return "Hogar"
-        }
-    }
-
     modelProduct = () => {
         return {
             _id: faker.database.mongodbObjectId(),
@@ -42,36 +31,41 @@ export class mockController {
         }
     }
 
+    randomCategory = () => {
+
+        const i = faker.number.int({ min: 1, max: 3 })
+
+        switch (i) {
+            case 1: return "Computacion"
+            case 2: return "Alimentos"
+            case 3: return "Hogar"
+        }
+    }
+
     createRandomUser = (quantity) => {
-        return async (req, res) => {
+        return async (req, res, next) => {
             try {
                 const testUsers = []
-
                 for (let i = 0; i < quantity; i++) {
                     testUsers.push(this.modelUser())
                 }
-
                 res.status(200).send({ status: true, testUsers: testUsers })
             } catch (error) {
-                console.log(error)
-                res.status(400).send({ status: false, error: error })
+                next(error)
             }
         }
     }
 
     createRandomProduct = (quantity) => {
-        return async (req, res) => {
+        return async (req, res, next) => {
             try {
                 const testProducts = []
-
                 for (let i = 0; i < quantity; i++) {
                     testProducts.push(this.modelProduct())
                 }
-
                 res.status(200).send({ status: true, testProducts: testProducts })
             } catch (error) {
-                console.log(error)
-                res.status(400).send({ status: false, error: error })
+                next(error)
             }
         }
     }
