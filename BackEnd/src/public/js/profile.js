@@ -7,7 +7,7 @@ const productsButton = document.getElementById("productsButton")
  
 productsButton.innerHTML = `<a href="http://localhost:8080/static/products"><button> Productos </button></a>`
  
-fetch(`http://localhost:8080/api/sessions/current`)
+fetch(`http://localhost:8080/api/session/current`)
     .then(res => res.json())
     .then(res => {
         console.log(res)
@@ -27,7 +27,7 @@ fetch(`http://localhost:8080/api/sessions/current`)
 
 logout.addEventListener("click", async () => {
 
-    fetch(`http://localhost:8080/api/sessions/logout`)
+    fetch(`http://localhost:8080/api/session/logout`)
         .then(res => res.json())
         .then(data => {
             console.log(data)

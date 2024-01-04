@@ -1,7 +1,7 @@
 import userModel from "../models/users.models.js"
 import { generateToken } from "../utils/jwt.js"
 
-import { sendRecoveryEmail } from "../config/nodemailer.js"
+import { sendDeletedUserEmail, sendRecoveryEmail } from "../config/nodemailer.js"
 import { validatePassword, createHash } from "../utils/bcrypt.js"
 import crypto from 'crypto'
 
@@ -13,10 +13,9 @@ export class usersController {
         this.recoveryLinks = [{}]
     }
 
-    postUser = async (req, res, next) => {
+    postUser = async (req, res, next) => {// Devuelve un JWT si el usuario se registra exitosamente
         try {
             if (!req.user) {
-                //res.status(400).send({ status: false, mensaje: 'Usuario ya existente' })
                 CustomError.createError({
                     name: 'Register Error',
                     cause: 'Usuario ya existente',
@@ -25,7 +24,6 @@ export class usersController {
                     level: 3,
                 })
             }
-
             const token = generateToken(req.user)
 
             res.cookie('jwtCookie', token, {
@@ -34,12 +32,11 @@ export class usersController {
             })
             res.status(201).send({ status: true, token: token })
         } catch (error) {
-            //res.status(500).send({ mensaje: `Error al crear usuario ${error}` })
             next(error)
         }
     }
 
-    postPasswordRecovery = async (req, res, next) => {
+    postPasswordRecovery = async (req, res, next) => {// Recuperacion de contraseña
         const { email } = req.body
 
         try {
@@ -55,7 +52,7 @@ export class usersController {
 
                 sendRecoveryEmail(email, recoveryLink)
 
-                res.status(200).send('Correo de recuperacion enviado correctamente')
+                res.status(200).send({status: true, message: 'Correo de recuperacion enviado correctamente'})
             } else {
                 CustomError.createError({
                     name: 'Password Recovery Error',
@@ -70,26 +67,24 @@ export class usersController {
         }
     }
 
-    postResetPassword = async (req, res, next) => {
+    postResetPassword = async (req, res, next) => {// Reset de contraseña
         const { token } = req.params
         const { newPassword, email } = req.body
         try {
             //Verifico que el token es valido y no ha expirado (1 hora = 3600000)
             const linkData = this.recoveryLinks[token]
 
-            if (linkData && linkData.email == email && Date.now() - linkData.timestamp <= 300000) {
+            if (linkData && linkData.email == email && Date.now() - linkData.timestamp <= 3600000) {
 
                 const userFound = await userModel.findOne({ email: linkData.email })
                 const oldPassword = userFound.password
-                const isValidPassword = validatePassword(newPassword, oldPassword) //Consulto si la nueva contraseña es distinta a la antigua
+                const isValidPassword = validatePassword(newPassword, oldPassword)
 
                 if (!isValidPassword) {
-
                     userFound.password = createHash(newPassword)
-                    await userFound.save()// Cambio de contraseña (modificar cliente)
-
+                    await userFound.save()
                     delete this.recoveryLinks[token]
-                    res.status(200).send('Contraseña modificada correctamente')
+                    res.status(200).send({status: true, message:'Contraseña modificada correctamente'})
                 } else {
                     CustomError.createError({
                         name: 'Password Reset Error',
@@ -107,7 +102,6 @@ export class usersController {
                     code: EErrors.INVALID_TYPE,
                     level: 3,
                 })
-                //res.status(400).send('Token invalido o expirado. Pruebe nuevamente')
             }
         } catch (error) {
             delete this.recoveryLinks[token]
@@ -115,7 +109,7 @@ export class usersController {
         }
     }
 
-    postUploadDocument = async (req, res, next) => {
+    postUploadDocument = async (req, res, next) => {// Subida de documentos de Usuarios
 
         try {
 
@@ -156,13 +150,13 @@ export class usersController {
                 }
             }
             updateUserDocuments()
-            res.status(200).send("Archivo/s subido")
+            res.status(200).send({status: true, message:"Archivo/s subido"})
         } catch (error) {
             next(error)
         }
     }
 
-    getAllUsers = async (req, res, next) => {
+    getAllUsers = async (req, res, next) => {// Devuelve todos los usuarios
         try {
             const rawUsers = await userModel.find()
 
@@ -183,13 +177,13 @@ export class usersController {
         }
     }
 
-    deleteInactiveUsers = async (req, res, next) => {
+    deleteInactiveUsers = async (req, res, next) => {// Borra los usuarios inactivos
         try {
             const rawUsers = await userModel.find()
 
             const currentDate = new Date()
 
-            const filteredUsers = rawUsers.filter(rawUser =>  currentDate.getTime() - rawUser.last_connection.getTime() > 1800000 )//7200000
+            const filteredUsers = rawUsers.filter(rawUser =>  currentDate.getTime() - rawUser.last_connection.getTime() > 172800000 )// 2 días
 
             console.log(filteredUsers)
 
@@ -199,6 +193,7 @@ export class usersController {
 
                 if(filteredUsers.length > i){
                     await userModel.findByIdAndRemove(filteredUsers[i]._id)
+                    sendDeletedUserEmail(filteredUsers[i].email)
                     i++
                     deleteFilterUsers()
                 }

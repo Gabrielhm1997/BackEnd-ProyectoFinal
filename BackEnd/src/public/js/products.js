@@ -1,7 +1,7 @@
 const greeting = document.getElementById("greeting")
 const specialButton = document.getElementById("specialButton")
 
-fetch(`http://localhost:8080/api/sessions/current`)
+fetch(`http://localhost:8080/api/session/current`)
     .then(res => res.json())
     .then(res => {
         console.log(res)

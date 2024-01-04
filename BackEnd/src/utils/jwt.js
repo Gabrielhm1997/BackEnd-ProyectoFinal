@@ -1,4 +1,3 @@
-//import 'dotenv/config'
 import enviroment from '../config/enviroment.js'
 import jwt from 'jsonwebtoken'
 
@@ -15,13 +14,12 @@ export const authToken = (req, res, next) => {
         return res.status(401).send({ status: false, error: 'Usuario no autenticado' })
     }
 
-    const token = authHeader.split(' ')[1] //Separa en dos mi token y me quedo con la parte valida
+    const token = authHeader.split(' ')[1]
 
     jwt.sign(token, enviroment.JWT_SECRET, (error, credentials) => {
         if (error) {
             return res.status(403).send({ status: false,  error: "Usuario no autorizado" })
         }
-        //Descrifo el token
         req.user = credentials.user
         next()
     })

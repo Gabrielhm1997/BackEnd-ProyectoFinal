@@ -1,4 +1,3 @@
-//import 'dotenv/config'
 import enviroment from '../config/enviroment.js'
 import bcrypt from 'bcrypt'
 

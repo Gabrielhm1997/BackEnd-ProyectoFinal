@@ -2,7 +2,8 @@ import { Router } from "express"
 import passport from "passport"
 import { usersController } from "../controllers/users.controller.js"
 import { passportError } from "../utils/messageErrors.js"
-import { upload} from "../middlewares/multer/UserDocs.js"
+import { upload } from "../middlewares/multer/UserDocs.js"
+import { authorization } from "../utils/messageErrors.js"
 
 const routerUsers = Router()
 const controller = new usersController()
@@ -12,6 +13,6 @@ routerUsers.post('/password-recovery', controller.postPasswordRecovery)
 routerUsers.post('/reset-password/:token', controller.postResetPassword)
 routerUsers.post('/:uid/documents', passportError('jwt'), upload.array('userDocument', 10), controller.postUploadDocument)
 routerUsers.get('/', controller.getAllUsers)
-routerUsers.delete('/', controller.deleteInactiveUsers)
+routerUsers.delete('/', passportError('jwt'), authorization(['admin']), controller.deleteInactiveUsers)
 
 export default routerUsers

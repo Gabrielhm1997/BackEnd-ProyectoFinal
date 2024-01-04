@@ -18,7 +18,7 @@ export class cartsController {
         }
     }
 
-    postProductInCart = async (req, res, next) => {// Agrega un producto por su id al carrito -- HandlerError
+    postProductInCart = async (req, res, next) => {// Agrega un producto por su id al carrito
         const { cid, pid } = req.params
         const { quantity } = req.body
 
@@ -76,7 +76,7 @@ export class cartsController {
         }
     }
 
-    getProductsFromCart = async (req, res, next) => {// Lista los productos del carrito -- HandlerError
+    getProductsFromCart = async (req, res, next) => {// Lista los productos del carrito
 
         const { cid } = req.params
 
@@ -98,7 +98,7 @@ export class cartsController {
             if (cart) {
                 const products = cart.products
                 if (products.length > 0) {
-                    res.status(200).send({status: true, products: products ?? []})
+                    res.status(200).send({ status: true, products: products ?? [] })
                 } else {
                     //res.status(400).send("Cart empty")
                     CustomError.createError({
@@ -122,6 +122,15 @@ export class cartsController {
         } catch (error) {
             next(error)
             //res.status(400).send({ error: error, cause: error.cause ?? "Unhandle Error" })
+        }
+    }
+
+    getCarts = async (req, res, next) => {// Devuelve todos los carritos
+        try {
+            const carts = await cartModel.find()
+            res.status(200).send({ status: true, carts: carts })
+        } catch (error) {
+            next(error)
         }
     }
 
@@ -214,7 +223,7 @@ export class cartsController {
         }
     }
 
-    deleteEmptyCart = async (req, res) => {//Vaciar el carrito
+    deleteEmptyCart = async (req, res) => {// Vaciar el carrito
 
         const { cid } = req.params
 
@@ -254,7 +263,7 @@ export class cartsController {
                     const indice = cartFound.products.indexOf(productCartFound)
                     cartFound.products.splice(indice, 1)
                     await cartFound.save()
-                    res.status(200).send({ status: true, products: cartFound.products ?? []})
+                    res.status(200).send({ status: true, products: cartFound.products ?? [] })
 
                 } else {
                     res.status(404).send({ respuesta: 'Product does not exist in the cart', mensaje: cartFound.products })
@@ -268,7 +277,7 @@ export class cartsController {
             res.status(400).send({ error: e })
         }
     }
-    
+
     postPurchase = async (req, res) => {// Finalizar compra
         const { cid } = req.params
         let i = 0
@@ -308,11 +317,11 @@ export class cartsController {
                                     validProducts.forEach(product => {
                                         total += (product.id_prod.price * product.quantity)
                                     })
-                                    
-                                    if(req.user.rol == "premium"){
+
+                                    if (req.user.rol == "premium") {
                                         total = (total - (total * 0.1))
                                     }
-                                    
+
                                     const ticket = await ticketModel.create({ purchaser: req.user.email, amount: total, purchased_products: validProducts })
 
                                     cart.products = []

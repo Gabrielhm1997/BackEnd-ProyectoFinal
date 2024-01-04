@@ -17,14 +17,12 @@ export const passportError = (strategy) => {
                     CustomError.createError({
                         name: "Token Error",
                         cause: info.messages ? info.messages : `${infoD[1]}`,
-                        message: info.messages ? info.messages : `${infoD[0]}`, //
+                        message: info.messages ? info.messages : `${infoD[0]}`,
                         code: EErrors.INVALID_TYPE,
                         level: 3,
                         status: 401
                     })
-                    //return res.status(401).send({ status: false , error: info.messages ? info.messages : info.toString() })
                 }
-
                 req.user = user
                 next()
             } catch (error) {
@@ -50,7 +48,6 @@ export const authorization = (roles) => {
                     level: 3,
                     status: 401
                 })
-                //return res.status(401).send({ status: false, error: 'Usuario no autenticado' })
             }
 
             roles.forEach(rol => {
@@ -70,7 +67,6 @@ export const authorization = (roles) => {
                     level: 3,
                     status: 403
                 })
-                //return res.status(403).send({ status: false, error: 'Usuario no autorizado' })
             }
         } catch (error) {
             next(error)
