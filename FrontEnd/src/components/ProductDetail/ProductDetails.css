@@ -1,0 +1,28 @@
+.itemDetail{
+   background-color: rgb(2, 1, 94);
+   color: aliceblue;
+   height: auto;
+}
+
+.contendor-imagen{
+   position: relative;
+}
+
+.img-detalles{
+   width: 100%;
+   height: auto;
+
+   max-width: 30vw;
+   max-height: 50vh;
+}
+
+.agotado-detalles{
+   height: auto;
+   width: 40vw;
+   position: absolute;
+   transform: rotate(25deg);
+}
+
+.no-agotado{
+   display: none;
+}

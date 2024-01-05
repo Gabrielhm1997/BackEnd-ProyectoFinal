@@ -1,29 +1,40 @@
 import { useRef } from "react"
+import { useNavigate } from 'react-router-dom'
+
 import Githublogin from "../GitHubLogin/Githublogin"
 
 import './Login.css'
 
-export default function login() {
+export const Login = () => { //export default function login()
 
     const formRef = useRef(null)
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         const dataForm = new FormData(formRef.current)
         const userData = Object.fromEntries(dataForm)
 
-        fetch('http://localhost:8080/api/sessions/login', {
+        fetch('http://localhost:3000/api/session/login', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
             },
             body: JSON.stringify(userData)
-        }) .then(response => console.log(response))
+        })
+            .then(response => response.json())
+            .then(response => {
+                if(response.status){
+                    document.cookie = `jwtCookie=${response.token}; expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
+                    navigate('/products')
+                } else {
+                    console.log("Contraseña o email incorrectos")
+                }
+                
+            })
             .catch(error => console.log(error))
 
     }
-
-
     return (
         <div className='container-fluid'>
             <h2 className="text-center">Login</h2>

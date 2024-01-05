@@ -1,0 +1,38 @@
+.item{
+    background-color: rgb(2, 1, 94);
+    color: aliceblue;
+
+    border-radius: 10px;
+
+    width: 15rem;
+    height: 22rem;
+    margin: 5px;
+    padding: 10px;
+}
+
+
+.item a{
+    text-decoration: none;
+}
+
+.contendor-imagen{
+    position: relative;
+}
+
+.imgCard{
+    width: 10rem;
+    height: 10rem;
+}
+
+.agotado{
+    height: 15rem;
+    width: auto; 
+    position: absolute;
+    transform: rotate(25deg);
+    
+}
+
+.no-agotado{
+    display: none;
+}
+

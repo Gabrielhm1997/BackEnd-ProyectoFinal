@@ -24,13 +24,13 @@ export class usersController {
                     level: 3,
                 })
             }
-            const token = generateToken(req.user)
+           // const token = generateToken(req.user)
 
-            res.cookie('jwtCookie', token, {
-                httpOnly: true,
-                maxAge: 43200000
-            })
-            res.status(201).send({ status: true, token: token })
+            // res.cookie('jwtCookie', token, {
+            //     httpOnly: true,
+            //     maxAge: 43200000
+            // })
+            res.status(201).send({ status: true })
         } catch (error) {
             next(error)
         }
