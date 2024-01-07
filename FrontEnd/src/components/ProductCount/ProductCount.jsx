@@ -3,14 +3,14 @@ import { useState } from 'react'
 
 export const ProductCount = ({ inicial, stock, funcionAgregar }) => {
 
-    const [contador, setContador] = useState(inicial);
+    const [contador, setContador] = useState(inicial)
 
     const incrementar = () => {
         if (contador < stock) {
             setContador(contador + 1);
         }
     }
- 
+
     const decrementar = () => {
         if (contador > inicial) {
             setContador(contador - 1);

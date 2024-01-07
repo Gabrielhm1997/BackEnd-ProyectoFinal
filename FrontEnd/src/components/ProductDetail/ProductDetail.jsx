@@ -3,33 +3,29 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useContext } from 'react'
 import { UserContext } from '../../context/UserContext'
+import { loadProduct } from '../../utils/cart_Tools'
+
 import './ProductDetails.css'
 
 const ProductDetail = ({ _id, title, price, img, stock, description }) => {
 
-  //const [cantidadAgregada, setcantidadAgregada] = useState(0);
+  const { cart, obtenerToken, cargarUsuario } = useContext(UserContext)
+  const [cantidadAgregada, setcantidadAgregada] = useState(0);
 
   //const { agregarProducto } = useContext(CarritoContext);
 
-  // const manejadorCantidad = (cantidad) => {
-  //   setcantidadAgregada(cantidad);
-  //   const item = { _id, title, price, img, description };
-  //   agregarProducto(item, cantidad);
-  // }
-  const { cart } = useContext(useContext)
+  useEffect(() => {
+    cargarUsuario()
+  },[])
 
-  const agregarProducto = (idprod, quantity) => {
-
-    fetch(`http://localhost:3000/api/carts/${cart}/product/${idprod}`, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'Authorization': `${token}`
-      },
-      body: JSON.stringify(data)
-    })
-
+  const manejadorCantidad = (cantidad) => {
+    setcantidadAgregada(cantidad)
+    let token = obtenerToken()
+    loadProduct(cart, _id, cantidad, token)
+    //const item = { _id, title, price, img, description };
+    //agregarProducto(item, cantidad);
   }
+  
 
   return (
     <div className='itemDetail p-5 col-10 container-fluid row d-flex justify-content-center align-items-center'>
@@ -50,7 +46,7 @@ const ProductDetail = ({ _id, title, price, img, stock, description }) => {
           {stock <= 0 ?
             <strong className='text-center m-0' style={{ color: "red" }}>Agotado</strong>
             :
-            cantidadAgregada > 0 ? <Link to="/cart" className="btn btn-outline-light col-6"> Ir al Carrito </Link> : <ProductCount inicial={1} stock={stock} funcionAgregar={manejadorCantidad} />
+            cantidadAgregada > 0 ? <Link to="/cart" className="btn btn-outline-light col-6"> Ir al Carrito </Link> : <ProductCount pid={_id} inicial={1} stock={stock} funcionAgregar={manejadorCantidad} />
           }
 
         </div>

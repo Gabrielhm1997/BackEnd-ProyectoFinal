@@ -100,13 +100,7 @@ export class cartsController {
                 if (products.length > 0) {
                     res.status(200).send({ status: true, products: products ?? [] })
                 } else {
-                    CustomError.createError({
-                        name: "Get Products From Cart",
-                        cause: "Empty Cart",
-                        message: "Error Trying to Getting Products From Cart",
-                        code: EErrors.VOID_OBJECT,
-                        level: 3
-                    })
+                    res.status(200).send({ status: true, products: [] })
                 }
             } else {
                 CustomError.createError({
@@ -302,7 +296,7 @@ export class cartsController {
                     level: 3
                 })
             }
-        } catch (e) {
+        } catch (error) {
             next(error)
         }
     }
