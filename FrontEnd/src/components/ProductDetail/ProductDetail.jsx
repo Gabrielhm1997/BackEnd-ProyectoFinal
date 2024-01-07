@@ -1,20 +1,34 @@
 import { ProductCount } from '../ProductCount/ProductCount'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-// import { useContext } from 'react'
-// import { CarritoContext } from '../../context/CarritoContext'
+import { useContext } from 'react'
+import { UserContext } from '../../context/UserContext'
 import './ProductDetails.css'
 
 const ProductDetail = ({ _id, title, price, img, stock, description }) => {
 
-  const [cantidadAgregada, setcantidadAgregada] = useState(0);
+  //const [cantidadAgregada, setcantidadAgregada] = useState(0);
 
   //const { agregarProducto } = useContext(CarritoContext);
 
-  const manejadorCantidad = (cantidad) => {
-    setcantidadAgregada(cantidad);
-    const item = { _id, title, price, img, description };
-    agregarProducto(item, cantidad);
+  // const manejadorCantidad = (cantidad) => {
+  //   setcantidadAgregada(cantidad);
+  //   const item = { _id, title, price, img, description };
+  //   agregarProducto(item, cantidad);
+  // }
+  const { cart } = useContext(useContext)
+
+  const agregarProducto = (idprod, quantity) => {
+
+    fetch(`http://localhost:3000/api/carts/${cart}/product/${idprod}`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': `${token}`
+      },
+      body: JSON.stringify(data)
+    })
+
   }
 
   return (

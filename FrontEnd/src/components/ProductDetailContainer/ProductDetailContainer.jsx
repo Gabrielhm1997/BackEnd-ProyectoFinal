@@ -10,12 +10,6 @@ const ProductDetailContainer = () => {
  
     useEffect( () => {
 
-        // const nuevoDoc = doc(db, "inventario", idItem);
-
-        // getDoc(nuevoDoc)
-        //   .then(respuesta => {setProducto({id: respuesta.id, ...respuesta.data()})})
-        //   .catch(error => console.log(error))
-
         fetch(`http://localhost:3000/api/products/${idItem}`)
         .then(res => res.json())
         .then(res => {

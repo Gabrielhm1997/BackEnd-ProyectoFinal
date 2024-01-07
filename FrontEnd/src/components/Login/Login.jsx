@@ -1,11 +1,11 @@
-import { useRef } from "react"
+import { useRef, useContext } from "react"
 import { useNavigate } from 'react-router-dom'
 
 import Githublogin from "../GitHubLogin/Githublogin"
 
 import './Login.css'
 
-export const Login = () => { //export default function login()
+export const Login = () => {
 
     const formRef = useRef(null)
     const navigate = useNavigate()
