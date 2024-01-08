@@ -94,26 +94,26 @@ export const loadProduct = async (cid, pid, quantity, token) => {
     }
 }
 
-export const deleteProduct = async (cid, pid, token) => {
-    fetch(`http://localhost:3000/api/carts/${cid}/product/${pid}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(res => res.json())
-        .then(res => {
-            if (res.status) {
-                console.log(res)
-                return true
-            } else {
-                console.log(res)
-                return false
-            }
-        })
-        .catch(error => console.log(error))
-}
+// export const deleteProduct = async (cid, pid, token) => {
+//     fetch(`http://localhost:3000/api/carts/${cid}/product/${pid}`, {
+//         method: 'DELETE',
+//         headers: {
+//             'Content-type': 'application/json; charset=UTF-8',
+//             'Authorization': `Bearer ${token}`
+//         }
+//     })
+//         .then(res => res.json())
+//         .then(res => {
+//             if (res.status) {
+//                 console.log(res)
+//                 return true
+//             } else {
+//                 console.log(res)
+//                 return false
+//             }
+//         })
+//         .catch(error => console.log(error))
+// }
 
 export const emptyCart = (cid, token) => {
     fetch(`http://localhost:3000/api/carts/${cid}`, {
@@ -134,4 +134,27 @@ export const emptyCart = (cid, token) => {
             }
         })
         .catch(error => console.log(error))
+}
+
+export const purchase = (cid, token) => {
+    return new Promise((resolve, reject) => {
+        fetch(`http://localhost:3000/api/carts/${cid}/purchase`, {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status) {
+                console.log(res)
+                resolve (res)
+            } else {
+                console.log(res)
+                reject (res)
+            }
+        })
+        .catch(error => console.log(error))
+    })
 }

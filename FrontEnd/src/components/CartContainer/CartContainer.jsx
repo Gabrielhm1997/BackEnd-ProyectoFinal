@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { CartItem } from "../CartItem/CartItem"
 import { UserContext } from "../../context/UserContext"
-import { getCart, deleteProduct, emptyCart } from "../../utils/cart_Tools"
+import { getCart, emptyCart } from "../../utils/cart_Tools"
 import './Cart.css'
 
 export const CartContainer = () => {
@@ -16,17 +16,12 @@ export const CartContainer = () => {
     const [precioTotal, setPrecioTotal] = useState(0)
     const [isRecargar, setIsRecargar] = useState(false)
 
-    // const handlerDeleteProduct = async (cid, pid, token) => {
-    //     deleteProduct(cid, pid, token)
-    //     cargarCart(cid, token)
-    // }
-
     const handlerEmptyCart = async (cid, token) => {
         emptyCart(cid, token)
         setIsRecargar(!isRecargar)
     }
 
-    const cargarCart = async (cid, token) => {
+    const cargarCart = async (cid, token, rol) => {
 
         let carrito = []
 
@@ -44,6 +39,10 @@ export const CartContainer = () => {
                     productsQuantity = productsQuantity + product.quantity
                 })
 
+                if (rol == "premium") {
+                    finalPrice = (finalPrice - (finalPrice * 0.1))
+                }
+
                 setCantidadProductos(productsQuantity)
                 setPrecioTotal(finalPrice)
             }
@@ -52,7 +51,6 @@ export const CartContainer = () => {
     }
 
     useEffect(() => {
-        console.log(isRecargar)
         console.log("Cargando Carrito")
         let token = obtenerToken()
         setToken(token)
@@ -62,7 +60,7 @@ export const CartContainer = () => {
                 if (res.status) {
                     user = res.user
                     setCid(user.cart)
-                    cargarCart(user.cart, token)
+                    cargarCart(user.cart, token, user.rol)
                 } else {
                     console.log("Error al cargar usuario")
                 }

@@ -26,9 +26,6 @@ export const CartItem = ({ item, cantidad }) => {
         <p className="text-center m-0">{cantidad}</p>
       </div>
       <div className="col-1 d-flex align-items-center justify-content-center"></div>
-      {/* <div className="col-1 d-flex align-items-center justify-content-center">
-        <button onClick={() => funcionDelete(cart, item._id, token)} className="btn btn-outline-light"> Eliminar </button>
-      </div> */}
 
     </div>
   )
