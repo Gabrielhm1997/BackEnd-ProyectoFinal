@@ -2,53 +2,73 @@ import { useContext, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { CartItem } from "../CartItem/CartItem"
 import { UserContext } from "../../context/UserContext"
-import { getCart, emptyCart } from "../../utils/cart_Tools"
+import { getCart, deleteProduct, emptyCart } from "../../utils/cart_Tools"
 import './Cart.css'
 
 export const CartContainer = () => {
-    const { cargarUsuario, cart, obtenerToken } = useContext(UserContext)
+    const { obtenerToken, cargarUsuario } = useContext(UserContext)
 
-    const [token, setToken] = useState("")
     const [cid, setCid] = useState("")
+    const [token, setToken] = useState("")
+
     const [products, setProducts] = useState([])
     const [cantidadProductos, setCantidadProductos] = useState(0)
     const [precioTotal, setPrecioTotal] = useState(0)
+    const [isRecargar, setIsRecargar] = useState(false)
 
-    const cargarCart = () => {
-        
-        setToken(obtenerToken())
-        console.log(token)
-        console.log(cart)
+    // const handlerDeleteProduct = async (cid, pid, token) => {
+    //     deleteProduct(cid, pid, token)
+    //     cargarCart(cid, token)
+    // }
 
-        getCart(cart, token)
+    const handlerEmptyCart = async (cid, token) => {
+        emptyCart(cid, token)
+        setIsRecargar(!isRecargar)
+    }
+
+    const cargarCart = async (cid, token) => {
+
+        let carrito = []
+
+        await getCart(cid, token)
             .then(res => {
+
+                carrito = res
                 setProducts(res)
 
                 let finalPrice = 0
                 let productsQuantity = 0
 
-                console.log(products)
-                products.map(product => {
-                    finalPrice = finalPrice + (product.id_prod.price * product.id_prod.quantity)
-                    productsQuantity = productsQuantity + product.id_prod.quantity
+                carrito.map(product => {
+                    finalPrice = finalPrice + (product.id_prod.price * product.quantity)
+                    productsQuantity = productsQuantity + product.quantity
                 })
 
                 setCantidadProductos(productsQuantity)
                 setPrecioTotal(finalPrice)
-
-                console.log(cantidadProductos)
-                console.log(precioTotal)
             }
             )
             .catch(error => console.log(error))
     }
 
     useEffect(() => {
-        console.log("cargando")
+        console.log(isRecargar)
+        console.log("Cargando Carrito")
+        let token = obtenerToken()
+        setToken(token)
+        let user
         cargarUsuario()
-        cargarCart()
-        console.log("cargado")
-    }, [])
+            .then(res => {
+                if (res.status) {
+                    user = res.user
+                    setCid(user.cart)
+                    cargarCart(user.cart, token)
+                } else {
+                    console.log("Error al cargar usuario")
+                }
+            })
+            .catch(error => console.log(error))
+    }, [isRecargar])
 
     if (cantidadProductos === 0) {
         return (
@@ -76,14 +96,14 @@ export const CartContainer = () => {
                     <h3 className="col-2 text-center m-0 p-0">Cantidad</h3>
                     <p className="col-1"></p>
                 </div>
-                {products.map(producto => <CartItem key={producto.id_prod._id} {...producto.id_prod} />)}
+                {products.map(producto => <CartItem key={producto.id_prod._id} item={producto.id_prod} cantidad={producto.quantity}/>)}
                 <div className="row d-flex align-items-center justify-content-end">
                     <h3 className="col-2 text-end">Productos: {cantidadProductos}</h3>
                     <h3 className="col-2 text-end">Total: ${precioTotal}</h3>
                 </div>
                 <div className="d-flex align-items-center justify-content-end">
-                    <button onClick={() => emptyCart(cart, token)} className="btn btn-outline-light m-1">Vaciar Carrito</button>
-                    <Link to="/checkout"><button className="btn btn-outline-light m-1">Finalizar Compra</button></Link>
+                    <button onClick={() => handlerEmptyCart(cid, token)} className="btn btn-outline-light m-1">Vaciar Carrito</button>
+                    <button className="btn btn-outline-light m-1"><Link to="/checkout">Finalizar Compra</Link></button>
                 </div>
 
             </div>

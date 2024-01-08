@@ -24,31 +24,36 @@ export const UserProvider = ({ children }) => {
 
     const cargarUsuario = async () => {
 
-        let token = obtenerToken()
+        return new Promise((resolve, reject) => {
+            let token = obtenerToken()
 
-        fetch(`http://localhost:3000/api/session/current`, {
-            method: 'GET',
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-                'Authorization': `Bearer ${token}`
-            },
-        })
-            .then(res => res.json())
-            .then(res => {
-                if (res.status) {
-                    setId(res.user._id)
-                    setFirst_name(res.user.first_name)
-                    setLast_name(res.user.last_name)
-                    setAge(res.user.age)
-                    setEmail(res.user.email)
-                    setRol(res.user.rol)
-                    setCart(res.user.cart)
-                    setLast_connection(res.user.last_connection)
-                } else {
-                    console.log(res)
-                }
+            fetch(`http://localhost:3000/api/session/current`, {
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                    'Authorization': `Bearer ${token}`
+                },
             })
-            .catch(error => console.log(error))
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status) {
+                        setId(res.user._id)
+                        setFirst_name(res.user.first_name)
+                        setLast_name(res.user.last_name)
+                        setAge(res.user.age)
+                        setEmail(res.user.email)
+                        setRol(res.user.rol)
+                        setCart(res.user.cart)
+                        setLast_connection(res.user.last_connection)
+                        resolve({ status: true, user: res.user })
+                    } else {
+                        console.log(res)
+                        reject({ status: false })
+                    }
+                })
+                .catch(error => console.log(error))
+        })
+
     }
 
     const obtenerToken = () => {
