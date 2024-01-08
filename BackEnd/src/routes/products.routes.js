@@ -5,7 +5,6 @@ import { productsController } from "../controllers/products.controller.js"
 const routerProducts = Router()
 const controller = new productsController()
 
-// ?type=title&query=teclado&limit=3&page=1&sort=desc
 routerProducts.get('/', controller.getProducts)// Devuelve los productos segun el filtro
 
 routerProducts.get('/:id', controller.getProductByID)// Devuelve un producto segun su ID

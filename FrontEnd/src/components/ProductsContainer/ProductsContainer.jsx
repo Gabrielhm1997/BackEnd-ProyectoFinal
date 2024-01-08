@@ -17,6 +17,7 @@ export const ProductsContainer = () => {
             .then(res => res.json())
             .then(res => {
                 setProducts(res.docs)
+                console.log(res.docs)
             })
             .catch(error => console.log(error))
     }, [])

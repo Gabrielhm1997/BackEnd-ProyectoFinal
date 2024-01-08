@@ -3,10 +3,14 @@ import passport from "passport"
 import { passportError } from '../utils/messageErrors.js'
 import { generateToken } from "../utils/jwt.js"
 import userModel from "../models/users.models.js"
+import { usersController } from "../controllers/users.controller.js"
 import CustomError from "../services/errors/CustomError.js"
 import EErrors from "../services/errors/enums.js"
 
 const routerSessions = Router()
+const userController = new usersController()
+
+routerSessions.post('/register', passport.authenticate('register'), userController.postUser)// Registro
 
 routerSessions.get('/current', passportError('jwt'), async (req, res) => {// Devuelve la sesion actual
     res.status(200).send({ status: true, user: req.user })

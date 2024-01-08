@@ -11,7 +11,7 @@ export const Register = () => {
     const dataForm = new FormData(formRef.current)
     const userData = Object.fromEntries(dataForm)
 
-    fetch('http://localhost:3000/api/users', {
+    fetch('http://localhost:3000/api/session/register', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json; charset=UTF-8',

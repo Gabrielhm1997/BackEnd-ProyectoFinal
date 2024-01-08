@@ -8,13 +8,12 @@ export class productsController {
     constructor() { }
 
     getProducts = async (req, res, next) => {// Devuelve los productos segun el filtro
-        // ?type=title&query=teclado&limit=3&page=1&sort=desc
-        const { limit, page, sort, type, query } = req.query
+        const { limit, page, sort, category } = req.query
 
         let queryType = ""
 
-        if (type && query) {
-            queryType = JSON.parse(`{ "${type}": "${query}"  }`) // Formato de la query
+        if (category) {
+            queryType = { category: category }
         }
 
         try {
@@ -33,7 +32,7 @@ export class productsController {
         try {
             const product = await productModel.findById(id)
             if (product) {
-                res.status(200).send({status: true, product: product})
+                res.status(200).send({ status: true, product: product })
             } else {
                 CustomError.createError({
                     name: "Get Product Error",
@@ -64,14 +63,14 @@ export class productsController {
                 })
             } else {
                 const response = await productModel.create({ title, description, stock, code, price, category })
-                res.status(201).send({status: true, product: response})
+                res.status(201).send({ status: true, product: response })
             }
-        } catch (error) {             
+        } catch (error) {
             next(error)
         }
     }
 
-    putProduct = async (req, res, next) => {
+    putProduct = async (req, res, next) => { // Modifica un producto
         const { id } = req.params
         const { title, description, stock, code, price, category, status } = req.body
 
@@ -80,7 +79,7 @@ export class productsController {
             const product = await productModel.findById(id)
 
             if (response) {
-                res.status(200).send({status: true, product: product})
+                res.status(200).send({ status: true, product: product })
             } else {
                 CustomError.createError({
                     name: "Put Product Error",
@@ -96,14 +95,14 @@ export class productsController {
         }
     }
 
-    deleteProduct = async (req, res, next) => {
+    deleteProduct = async (req, res, next) => {// Borra un producto
         const { id } = req.params
 
         try {
             const response = await productModel.findByIdAndDelete(id) //Retorna el objeto o null
 
             if (response) {
-                res.status(200).send({status: true, product: undefined})
+                res.status(200).send({ status: true, product: undefined })
             } else {
                 CustomError.createError({
                     name: "Delete Product Error",
