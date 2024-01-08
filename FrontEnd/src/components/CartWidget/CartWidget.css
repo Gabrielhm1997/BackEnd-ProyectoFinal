@@ -1,0 +1,16 @@
+.cartWidget{
+    position: absolute;
+    right: 50%;
+    left: 50%;
+}
+
+i{
+    display: inline-block;
+    font-size: 50px;
+}
+
+strong{
+    display: inline-block;
+    font-size: xx-large;
+    margin-left: 5px;
+}

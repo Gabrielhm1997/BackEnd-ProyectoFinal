@@ -1,7 +1,5 @@
 import { useRef, useContext } from "react"
-import { useNavigate } from 'react-router-dom'
-
-import Githublogin from "../GitHubLogin/Githublogin"
+import { useNavigate, Link } from 'react-router-dom'
 
 import './Login.css'
 
@@ -24,13 +22,13 @@ export const Login = () => {
         })
             .then(response => response.json())
             .then(response => {
-                if(response.status){
+                if (response.status) {
                     document.cookie = `jwtCookie=${response.token}; expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
                     navigate('/')
                 } else {
                     console.log("Contraseña o email incorrectos")
                 }
-                
+
             })
             .catch(error => console.log(error))
 
@@ -38,9 +36,12 @@ export const Login = () => {
     return (
         <div className='container-fluid'>
             <h2 className="text-center">Login</h2>
-            <Githublogin />
+            <div className='d-flex justify-content-center align-items-center'>
+                <button type="button" className="btn btn-outline-light"><Link to={`/register`} className="col-12 d-flex justify-content-center align-items-center">Registrarse</Link></button>
+            </div>
             <div className="row d-flex justify-content-center align-items-center">
                 <form onSubmit={handleSubmit} ref={formRef} className="login_container row col-4 d-flex justify-content-center">
+
                     <div className="mb-3 input_container col-12 row">
                         <label htmlFor="email" className="text-start">Email:</label>
                         <input type="mail" name='email' className="" />
@@ -51,7 +52,9 @@ export const Login = () => {
                     </div>
                     <button type='submit' className='btn btn-dark col-6'>Iniciar Sesion</button>
                 </form>
+
             </div>
-        </div>
+
+        </div >
     )
 }

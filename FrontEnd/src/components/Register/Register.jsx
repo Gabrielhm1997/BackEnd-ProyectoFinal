@@ -1,8 +1,6 @@
 import { useRef } from "react"
 import { useNavigate } from 'react-router-dom'
 
-import Githublogin from "../GitHubLogin/Githublogin"
-
 export const Register = () => {
 
   const formRef = useRef(null)
@@ -35,8 +33,6 @@ export const Register = () => {
   return (
     <div className='container-fluid'>
       <h2 className="text-center">Registro</h2>
-
-      <Githublogin />
 
       <div className="row d-flex justify-content-center align-items-center">
 

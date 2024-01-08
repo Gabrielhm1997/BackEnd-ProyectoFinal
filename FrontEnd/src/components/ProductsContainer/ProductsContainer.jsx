@@ -23,9 +23,7 @@ export const ProductsContainer = () => {
 
     return (
         <>
-            {/* <h2 className="text-center m-2">{categoria ? categoria.toUpperCase() : "PRODUCTOS"}</h2> */}
-            <h2>Productos</h2>
-            <h2>{`Hola ${first_name}`}</h2>
+            <h2 className="text-center">Productos</h2>
 
             <div className="container-fluid">
                 <ProductList products={products} />

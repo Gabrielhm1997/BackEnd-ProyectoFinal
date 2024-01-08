@@ -1,0 +1,64 @@
+header a {
+    text-decoration: none;
+    color: aliceblue;
+}
+
+header li a {
+    font-size: 1.25rem;
+    transition: 0.25s;
+}
+
+header li a:hover {
+    transform: scale(1.25);
+}
+
+header {
+    border-bottom: 1px black solid;
+    background-color: rgb(2, 1, 94);
+    color: aliceblue;
+}
+
+.offcanvas {
+    background-color: rgb(2, 1, 94);
+    color: aliceblue;
+}
+
+.offcanvas-header {
+    border-bottom: 1px solid aliceblue;
+}
+
+.logo {
+    height: 17vw;
+    max-height: 8rem;
+    width: 17vw;
+    max-width: 8rem;
+    box-shadow: 2px 2px 4px 2px black;
+}
+
+/* Boton NavBar */
+
+.navbar-toggler {
+
+    display: flex;
+    align-items: center;
+
+    border-width: 2px;
+    border-color: aliceblue;
+
+    width: 3.25rem;
+    height: 3.25rem;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg  xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(240, 248, 255)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+/* Boton Cerrar Navbar*/
+
+.btn-close {
+    background-color: aliceblue;
+}
+
+.active{
+    color: lime;
+}
