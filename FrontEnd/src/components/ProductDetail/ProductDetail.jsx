@@ -10,9 +10,7 @@ import './ProductDetails.css'
 const ProductDetail = ({ _id, title, price, img, stock, description }) => {
 
   const { cart, obtenerToken, cargarUsuario } = useContext(UserContext)
-  const [cantidadAgregada, setcantidadAgregada] = useState(0);
-
-  //const { agregarProducto } = useContext(CarritoContext);
+  const [cantidadAgregada, setcantidadAgregada] = useState(0)
 
   useEffect(() => {
     cargarUsuario()
@@ -22,11 +20,8 @@ const ProductDetail = ({ _id, title, price, img, stock, description }) => {
     setcantidadAgregada(cantidad)
     let token = obtenerToken()
     loadProduct(cart, _id, cantidad, token)
-    //const item = { _id, title, price, img, description };
-    //agregarProducto(item, cantidad);
   }
   
-
   return (
     <div className='itemDetail p-5 col-10 container-fluid row d-flex justify-content-center align-items-center'>
 

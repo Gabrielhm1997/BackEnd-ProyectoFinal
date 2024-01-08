@@ -243,7 +243,7 @@ export class cartsController {
                 cartFound.products = []
                 await cartFound.save()
 
-                res.status(200).send({status: true, cart: cartFound})
+                res.status(200).send({status: true, products: cartFound.products})
 
             } else {
                 CustomError.createError({

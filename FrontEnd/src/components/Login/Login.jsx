@@ -26,7 +26,7 @@ export const Login = () => {
             .then(response => {
                 if(response.status){
                     document.cookie = `jwtCookie=${response.token}; expires=${new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toUTCString()};path=/`
-                    navigate('/products')
+                    navigate('/')
                 } else {
                     console.log("Contraseña o email incorrectos")
                 }

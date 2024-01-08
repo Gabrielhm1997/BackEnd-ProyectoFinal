@@ -1,0 +1,15 @@
+.cart-container{
+    background-color: rgb(2, 1, 94);
+    color: aliceblue;
+}
+
+a{
+    text-decoration: none;
+    background-color: rgb(2, 1, 94);
+    color: aliceblue;
+    border-radius: 10px;
+}
+
+.btn-carritovacio{
+    width: 100%;
+}
