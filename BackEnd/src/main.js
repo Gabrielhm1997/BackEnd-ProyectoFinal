@@ -2,14 +2,12 @@ import enviroment from './config/enviroment.js'
 import cors from 'cors'
 import express from 'express'
 import session from "express-session"
-//import { engine } from 'express-handlebars'
 import cookieParser from "cookie-parser"
 import passport from "passport"
 import mongoose from 'mongoose'
 import MongoStore from "connect-mongo"
 import { Server } from 'socket.io'
 import router from './routes/index.routes.js'
-//import routerViews from './routes/views.routes.js'
 import initializePassport from "./config/passport.js"
 import { errorHandler } from './middlewares/errors/errorHandler.js'
 import swaggerJSDoc from 'swagger-jsdoc'
@@ -62,8 +60,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
-// app.engine('handlebars', engine())
-// app.set('view engine', 'handlebars')
+
 app.set('views', 'src/views')
 initializePassport()
 app.use(passport.initialize())
@@ -72,7 +69,6 @@ app.use(passport.session())
 //Routes
 app.use ('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 app.use('/static', express.static('src/public')) // Rutas publicas
-//app.use('/static', routerViews) // Ruta de vistas Handlebars
 app.use('/api', router) // Router de las rutas "API"
 app.use(errorHandler)
 
