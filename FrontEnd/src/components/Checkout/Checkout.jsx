@@ -14,6 +14,7 @@ export const Checkout = () => {
         purchase(cid, token)
             .then(res => {
                 if (res.status) {
+                    console.log(res.ticket)
                     setTicket(res.ticket)
                     setIsExitosa(true)
                 }
@@ -46,7 +47,6 @@ export const Checkout = () => {
     }, [])
 
     if (!isExitosa) {
-        console.log(errorPurchase)
         return (
             <>
                 <h2 className="text-center">Finalizar Compra</h2>
